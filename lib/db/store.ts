@@ -22,7 +22,7 @@ import {
 
 const STORAGE_KEYS = {
   PRODUCTS: "altaj_products_v3",
-  ORDERS: "altaj_orders_v2",
+  ORDERS: "altaj_orders_v3",
   CUSTOMERS: "altaj_customers_v2",
   INVENTORY_LOGS: "altaj_inventory_logs_v2",
   SETTINGS: "altaj_settings_v2",

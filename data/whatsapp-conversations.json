@@ -377,7 +377,7 @@
       "customerCity": "Casablanca",
       "customerName": "Ayoub",
       "customerAddress": "sidi bernoussi hda café Salma",
-      "isConfirmed": true,
+      "isConfirmed": false,
       "confirmedAt": "2026-09-29T08:40:59.028Z",
       "orderId": "ord-1790671259031",
       "orderNumber": "ALTAJ-1045",

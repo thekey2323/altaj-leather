@@ -55,78 +55,28 @@ function mapToSupabaseOrder(o: Order) {
 export async function GET() {
   try {
     let cloudOrders: Order[] = [];
+    let isCloudAvailable = false;
+
     try {
       const { data, error } = await supabase
         .from("orders")
         .select("*")
         .order("created_at", { ascending: false });
 
-      if (!error && Array.isArray(data) && data.length > 0) {
+      if (!error && Array.isArray(data)) {
+        isCloudAvailable = true;
         cloudOrders = data.map(mapFromSupabaseOrder);
       }
     } catch {}
 
+    // If Supabase Cloud is connected, it is the single source of truth!
+    // If cloudOrders is empty, it means all orders were deleted - do NOT revive mock demo orders!
+    if (isCloudAvailable) {
+      return NextResponse.json(cloudOrders);
+    }
+
     const localOrders = getOrders();
-    const waConvs = getWhatsAppConversations();
-
-    const waOrders: Order[] = [];
-    for (const c of waConvs) {
-      if (c.capturedOrder && c.capturedOrder.isConfirmed) {
-        const o = c.capturedOrder;
-        const exists =
-          localOrders.some((ex) => ex.orderNumber === o.orderNumber || (ex.id && ex.id === o.orderId)) ||
-          cloudOrders.some((ex) => ex.orderNumber === o.orderNumber || (ex.id && ex.id === o.orderId));
-
-        if (!exists) {
-          const isDuo = (o.quantity || 1) >= 2;
-          waOrders.push({
-            id: o.orderId || `ord-${Date.now()}`,
-            orderNumber: o.orderNumber || "ALTAJ-COD",
-            customerName: o.customerName || c.customerName,
-            customerPhone: o.customerPhone || c.customerPhone,
-            customerAddress: o.customerAddress || "Adresse WhatsApp",
-            customerCity: o.customerCity || "Casablanca",
-            status: "CONFIRMED",
-            paymentMethod: "COD",
-            createdAt: o.confirmedAt || c.lastMessageAt,
-            notes: `[Commande Capturée WhatsApp Bot] Modèle: ${o.modelChosen || "Pack Duo ALTAJ"}`,
-            internalNotes: [],
-            items: [
-              {
-                id: `item-${o.orderId || Date.now()}`,
-                productId: "prod-1",
-                productName: o.modelChosen || "PACK DUO — ALTAJ (2 Portefeuilles Cuir)",
-                productImage: "/images/products/altaj-classic-marron-custom-1.jpg",
-                quantity: o.quantity || 2,
-                unitPrice: isDuo ? 100 : 119,
-                totalPrice: o.totalPrice || 200,
-                bundleName: isDuo ? "Pack Duo (2 Portefeuilles)" : undefined,
-              },
-            ],
-            subtotal: o.totalPrice || 200,
-            shippingFee: o.shippingFee ?? 0,
-            courierCost: 30,
-            discount: 0,
-            total: o.totalPrice || 200,
-            utmSource: c.utmSource || "WhatsApp",
-            utmCampaign: c.utmCampaign || "Organic",
-          });
-        }
-      }
-    }
-
-    if (cloudOrders.length > 0) {
-      // Merge unique orders
-      const combined = [...cloudOrders];
-      localOrders.forEach((lo) => {
-        if (!combined.some((co) => co.orderNumber === lo.orderNumber || co.id === lo.id)) {
-          combined.push(lo);
-        }
-      });
-      return NextResponse.json([...waOrders, ...combined]);
-    }
-
-    return NextResponse.json([...waOrders, ...localOrders]);
+    return NextResponse.json(localOrders);
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

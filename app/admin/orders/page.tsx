@@ -264,7 +264,7 @@ export default function AdminOrdersPage() {
         const data = await res.json();
         const updatedList: Order[] = data.orders || [];
         if (typeof window !== "undefined") {
-          localStorage.setItem("altaj_orders_v2", JSON.stringify(updatedList));
+          localStorage.setItem("altaj_orders_v3", JSON.stringify(updatedList));
         }
         setOrders(updatedList);
         setIsPurgeModalOpen(false);
