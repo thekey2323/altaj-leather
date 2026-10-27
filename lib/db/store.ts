@@ -195,22 +195,28 @@ export function getProductBySlug(slug: string): Product | undefined {
 
 export function saveProduct(product: Product): Product {
   const products = getProducts();
-  const index = products.findIndex((p) => p.id === product.id);
+  const index = products.findIndex((p) => p.id && p.id === product.id);
   let updated: Product[];
+  let savedProduct: Product;
   
   if (index >= 0) {
+    savedProduct = { ...product, updatedAt: new Date().toISOString() };
     updated = [...products];
-    updated[index] = { ...product, updatedAt: new Date().toISOString() };
+    updated[index] = savedProduct;
   } else {
-    updated = [
-      {
-        ...product,
-        id: product.id || `prod-${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      },
-      ...products,
-    ];
+    savedProduct = {
+      ...product,
+      id: product.id && product.id.trim() ? product.id : `prod-${Date.now()}`,
+      slug: product.slug && product.slug.trim()
+        ? product.slug
+        : (product.name || `produit-${Date.now()}`)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-|-$/g, "") || `prod-${Date.now()}`,
+      createdAt: product.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    updated = [savedProduct, ...products];
   }
 
   if (isBrowser()) {
@@ -219,13 +225,13 @@ export function saveProduct(product: Product): Product {
       fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
+        body: JSON.stringify(savedProduct),
       }).catch(() => {});
     } catch {}
   }
   saveServerJson("products.json", updated);
   memoryProducts = updated;
-  return product;
+  return savedProduct;
 }
 
 export function updateProductCost(productId: string, cost: number): Product | null {

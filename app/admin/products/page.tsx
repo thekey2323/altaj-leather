@@ -110,10 +110,17 @@ export default function AdminProductsPage() {
     loadProducts();
   }, []);
 
-  const handleDuplicate = (id: string) => {
+  const handleDuplicate = async (id: string) => {
     const clone = duplicateProduct(id);
     if (clone) {
-      loadProducts();
+      setProducts((prev) => [clone, ...prev]);
+      try {
+        await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(clone),
+        });
+      } catch {}
       showToast(`Produit dupliqué avec succès : ${clone.name}`);
     }
   };
@@ -121,10 +128,10 @@ export default function AdminProductsPage() {
   const handleDelete = async (id: string) => {
     if (confirm("Supprimer ce produit du catalogue ?")) {
       deleteProduct(id);
+      setProducts((prev) => prev.filter((p) => p.id !== id));
       try {
         await fetch(`/api/products?id=${encodeURIComponent(id)}`, { method: "DELETE" });
       } catch {}
-      loadProducts();
       showToast("Produit supprimé du catalogue.");
     }
   };
@@ -400,39 +407,73 @@ export default function AdminProductsPage() {
     showToast("Photo supprimée de la galerie.");
   };
 
+  const [isSaving, setIsSaving] = useState(false);
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
 
-    const slug =
-      editingProduct.slug ||
-      editingProduct.name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-|-$/g, "");
+    setIsSaving(true);
+    const productId = editingProduct.id?.trim() ? editingProduct.id : `prod-${Date.now()}`;
+    const slug = (editingProduct.slug?.trim() ? editingProduct.slug : editingProduct.name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || `produit-${Date.now()}`;
 
     const toSave: Product = {
       ...editingProduct,
+      id: productId,
       slug,
       featuredImage:
         editingProduct.featuredImage ||
         editingProduct.images[0]?.url ||
         "/images/products/cognac-minimalist.jpg",
+      updatedAt: new Date().toISOString(),
     };
 
-    saveProduct(toSave);
-    try {
-      await fetch("/api/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(toSave),
-      });
-    } catch {}
+    // 1. Immediately save locally & update state so user sees it right away
+    const saved = saveProduct(toSave);
+    setProducts((prev) => {
+      const idx = prev.findIndex((p) => p.id === saved.id);
+      if (idx >= 0) {
+        const copy = [...prev];
+        copy[idx] = saved;
+        return copy;
+      }
+      return [saved, ...prev];
+    });
 
     setIsModalOpen(false);
     setEditingProduct(null);
-    loadProducts();
-    showToast("Produit et visuel par défaut enregistrés avec succès !");
+
+    // 2. Persist to API & Supabase
+    try {
+      const res = await fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(saved),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.product) {
+          setProducts((prev) => {
+            const idx = prev.findIndex((p) => p.id === data.product.id);
+            if (idx >= 0) {
+              const copy = [...prev];
+              copy[idx] = data.product;
+              return copy;
+            }
+            return [data.product, ...prev];
+          });
+        }
+      }
+    } catch (err) {
+      console.warn("API product save warning:", err);
+    } finally {
+      setIsSaving(false);
+    }
+
+    showToast("Produit et visuel enregistrés avec succès dans le catalogue !");
   };
 
   const filteredProducts = products.filter(
@@ -1240,8 +1281,15 @@ export default function AdminProductsPage() {
                 >
                   Annuler
                 </Button>
-                <Button type="submit" variant="gold" size="md">
-                  Enregistrer les modifications
+                <Button type="submit" variant="gold" size="md" disabled={isSaving}>
+                  {isSaving ? (
+                    <span className="flex items-center gap-1.5">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Enregistrement...</span>
+                    </span>
+                  ) : (
+                    <span>Enregistrer le produit</span>
+                  )}
                 </Button>
               </div>
             </form>

@@ -92,17 +92,39 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body: Product = await req.json();
-    if (!body || !body.id) {
-      return NextResponse.json({ error: "Invalid product data" }, { status: 400 });
+    if (!body || !body.name) {
+      return NextResponse.json({ error: "Product name is required" }, { status: 400 });
     }
 
-    // 1. Save to local fallback store
+    if (!body.id || !body.id.trim()) {
+      body.id = `prod-${Date.now()}`;
+    }
+
+    if (!body.slug || !body.slug.trim()) {
+      body.slug =
+        body.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "") || `prod-${Date.now()}`;
+    }
+
+    if (!body.featuredImage) {
+      body.featuredImage = body.images?.[0]?.url || "/images/products/cognac-minimalist.jpg";
+    }
+
+    // 1. Save to local fallback store (and JSON)
     const saved = saveProduct(body);
 
     // 2. Upsert to Supabase
     try {
-      await supabase.from("products").upsert(mapToSupabase(body));
-    } catch {}
+      const supaData = mapToSupabase(saved);
+      const { error } = await supabase.from("products").upsert(supaData);
+      if (error) {
+        console.warn("Supabase product upsert warning:", error);
+      }
+    } catch (e) {
+      console.warn("Supabase product upsert error:", e);
+    }
 
     return NextResponse.json({ success: true, product: saved });
   } catch (err: any) {
