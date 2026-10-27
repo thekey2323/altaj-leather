@@ -1,0 +1,46 @@
+[
+  {
+    "id": "rev-1",
+    "name": "Soufiane Bennani",
+    "city": "Casablanca",
+    "rating": 5,
+    "comment": "تبارك الله، جودة الجلد الطبيعي ممتازة وخياطة متقونة بزاف. فحصت السلعة قبل ما نخلص الموزع والجلد رائحته نقية.",
+    "date": "Il y a 2 jours",
+    "isVerified": true,
+    "productSlug": "altaj-classic-marron",
+    "createdAt": "2026-10-25T14:30:00.000Z"
+  },
+  {
+    "id": "rev-2",
+    "name": "Omar Tazi",
+    "city": "Rabat",
+    "rating": 5,
+    "comment": "شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة. تعامل راقي جداً.",
+    "date": "Il y a 4 jours",
+    "isVerified": true,
+    "productSlug": "all",
+    "createdAt": "2026-10-23T11:20:00.000Z"
+  },
+  {
+    "id": "rev-3",
+    "name": "Yassine El Moden",
+    "city": "Tanger",
+    "rating": 5,
+    "comment": "الجلد الطبيعي سميك ولمسته نقية، حجم مريح وعملي جداً في الجيب مع البنكية وبطاقة التعريف.",
+    "date": "Il y a 1 semaine",
+    "isVerified": true,
+    "productSlug": "altaj-noir",
+    "createdAt": "2026-10-20T09:15:00.000Z"
+  },
+  {
+    "id": "rev-4",
+    "name": "Mehdi Skalli",
+    "city": "Marrakech",
+    "rating": 5,
+    "comment": "أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان اليدوي.",
+    "date": "Il y a 2 semaines",
+    "isVerified": true,
+    "productSlug": "all",
+    "createdAt": "2026-10-13T16:45:00.000Z"
+  }
+]

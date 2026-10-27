@@ -29,7 +29,9 @@ import {
 import { LuxuryProduct, LUXURY_PRODUCTS, getAllProducts } from '@/data/altajProducts';
 import { MOROCCAN_CITIES, validateMoroccanPhone } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
-import { getProducts } from '@/lib/db/store';
+import { getProducts, getReviews } from '@/lib/db/store';
+import { CustomerReview } from '@/types';
+import { WhatsAppAudioPlayer } from '@/components/common/WhatsAppAudioPlayer';
 
 interface LuxuryProductViewProps {
   product: LuxuryProduct;
@@ -98,6 +100,23 @@ export function LuxuryProductView({ product }: LuxuryProductViewProps) {
       }
     } catch {}
   }, []);
+
+  // Dynamic reviews loaded from database / WhatsApp audio
+  const [dynamicReviews, setDynamicReviews] = useState<CustomerReview[]>([]);
+
+  useEffect(() => {
+    try {
+      const allRevs = getReviews();
+      if (Array.isArray(allRevs) && allRevs.length > 0) {
+        const relevant = allRevs.filter(
+          (r) => !r.productSlug || r.productSlug === 'all' || r.productSlug === product.slug
+        );
+        if (relevant.length > 0) {
+          setDynamicReviews(relevant);
+        }
+      }
+    } catch {}
+  }, [product.slug]);
 
   // Bundle offer selection (default to Duo 2 pieces for 189 DH)
   const [selectedBundleId, setSelectedBundleId] = useState('bundle-2');
@@ -272,65 +291,89 @@ export function LuxuryProductView({ product }: LuxuryProductViewProps) {
     return `https://wa.me/212693148230?text=${encodeURIComponent(msg)}`;
   };
 
-  const reviews = lang === 'ar'
+  const reviews: CustomerReview[] = lang === 'ar'
     ? [
         {
+          id: 'rev-prod-1',
           name: 'سفيان بناني',
           city: 'الدار البيضاء',
           date: 'منذ يومين',
           rating: 5,
-          comment: `تبارك الله، ${product.arabicName} جودة الجلد الطبيعي ممتازة وخياطة متقونة. فحصت السلعة قبل ما نخلص الموزع.`
+          comment: `تبارك الله، ${product.arabicName} جودة الجلد الطبيعي ممتازة وخياطة متقونة. فحصت السلعة قبل ما نخلص الموزع.`,
+          isVerified: true,
+          createdAt: '2026-03-20T10:00:00Z',
         },
         {
+          id: 'rev-prod-2',
           name: 'عمر التازي',
           city: 'الرباط',
           date: 'منذ 4 أيام',
           rating: 5,
-          comment: `شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة.`
+          comment: `شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة.`,
+          isVerified: true,
+          createdAt: '2026-03-18T10:00:00Z',
         },
         {
+          id: 'rev-prod-3',
           name: 'ياسين المودن',
           city: 'طنجة',
           date: 'منذ أسبوع',
           rating: 5,
-          comment: `الجلد الطبيعي سميك ولمسته نقية، حجم عملي ومريح جداً في الجيب.`
+          comment: `الجلد الطبيعي سميك ولمسته نقية، حجم عملي ومريح جداً في الجيب.`,
+          isVerified: true,
+          createdAt: '2026-03-15T10:00:00Z',
         },
         {
+          id: 'rev-prod-4',
           name: 'مهدي الصقلي',
           city: 'مراكش',
           date: 'منذ أسبوعين',
           rating: 5,
-          comment: `أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان.`
+          comment: `أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان.`,
+          isVerified: true,
+          createdAt: '2026-03-08T10:00:00Z',
         }
       ]
     : [
         {
+          id: 'rev-prod-1',
           name: 'Soufiane Bennani',
           city: 'Casablanca',
           date: 'Il y a 2 jours',
           rating: 5,
-          comment: `Excellente qualité en cuir naturel pour ce modèle, finitions impeccables. Colis vérifié avant paiement.`
+          comment: `Excellente qualité en cuir naturel pour ce modèle, finitions impeccables. Colis vérifié avant paiement.`,
+          isVerified: true,
+          createdAt: '2026-03-20T10:00:00Z',
         },
         {
+          id: 'rev-prod-2',
           name: 'Omar Tazi',
           city: 'Rabat',
           date: 'Il y a 4 jours',
           rating: 5,
-          comment: `Offre 2 pièces à 189 DH très avantageuse. Emballage kraft soigné et livraison ultra rapide.`
+          comment: `Offre 2 pièces à 189 DH très avantageuse. Emballage kraft soigné et livraison ultra rapide.`,
+          isVerified: true,
+          createdAt: '2026-03-18T10:00:00Z',
         },
         {
+          id: 'rev-prod-3',
           name: 'Yassine El Moden',
           city: 'Tanger',
           date: 'Il y a 1 semaine',
           rating: 5,
-          comment: `Le cuir naturel est robuste et agréable au toucher. Format très élégant en poche.`
+          comment: `Le cuir naturel est robuste et agréable au toucher. Format très élégant en poche.`,
+          isVerified: true,
+          createdAt: '2026-03-15T10:00:00Z',
         },
         {
+          id: 'rev-prod-4',
           name: 'Mehdi Skalli',
           city: 'Marrakech',
           date: 'Il y a 2 semaines',
           rating: 5,
-          comment: `Artisanat marocain authentique. Très satisfait de ma commande ALTAJ LEATHER.`
+          comment: `Artisanat marocain authentique. Très satisfait de ma commande ALTAJ LEATHER.`,
+          isVerified: true,
+          createdAt: '2026-03-08T10:00:00Z',
         }
       ];
 
@@ -878,20 +921,31 @@ export function LuxuryProductView({ product }: LuxuryProductViewProps) {
           </div>
 
           <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3 overflow-x-auto pb-3 no-scrollbar snap-x">
-            {reviews.map((rev, i) => (
+            {(dynamicReviews.length > 0 ? dynamicReviews : reviews).map((rev, i) => (
               <div
-                key={i}
+                key={rev.id || i}
                 className="w-[82vw] sm:w-auto shrink-0 snap-start bg-white p-3.5 rounded-xl border border-[#E8DFD3] shadow-2xs flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center gap-0.5 text-[#D9A74A] mb-1.5">
-                    {[...Array(rev.rating)].map((_, s) => (
+                    {[...Array(rev.rating || 5)].map((_, s) => (
                       <Star key={s} className="w-3 h-3 fill-current" />
                     ))}
                   </div>
                   <p className="text-xs text-[#4C4138] leading-relaxed italic mb-2">
-                    "{rev.comment}"
+                    &quot;{rev.comment}&quot;
                   </p>
+
+                  {/* WhatsApp Voice Note Player if present */}
+                  {rev.audioUrl && (
+                    <div className="mb-2">
+                      <WhatsAppAudioPlayer
+                        audioUrl={rev.audioUrl}
+                        senderName={rev.name}
+                        durationLabel={rev.audioDuration}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t border-[#F0EBE3] pt-2">

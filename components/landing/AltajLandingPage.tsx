@@ -23,12 +23,15 @@ import { BrandHeader } from '@/components/brand/BrandHeader';
 import { BrandFooter } from '@/components/brand/BrandFooter';
 import { LUXURY_PRODUCTS, getAllProducts, adaptStoreProductToLuxury, LuxuryProduct } from '@/data/altajProducts';
 import { useLanguage } from '@/context/LanguageContext';
-import { getProducts } from '@/lib/db/store';
+import { getProducts, getReviews } from '@/lib/db/store';
+import { CustomerReview } from '@/types';
+import { WhatsAppAudioPlayer } from '@/components/common/WhatsAppAudioPlayer';
 
 export function AltajLandingPage() {
   const { lang, isRtl } = useLanguage();
   const [productsList, setProductsList] = useState<LuxuryProduct[]>(getAllProducts);
   const [selectedProductIndex, setSelectedProductIndex] = useState(0);
+  const [dynamicReviews, setDynamicReviews] = useState<CustomerReview[]>([]);
 
   // Synchronize products dynamically with store / admin updates
   useEffect(() => {
@@ -52,75 +55,105 @@ export function AltajLandingPage() {
       }
     };
     syncProducts();
+
+    try {
+      const storedRevs = getReviews();
+      if (Array.isArray(storedRevs) && storedRevs.length > 0) {
+        setDynamicReviews(storedRevs);
+      }
+    } catch {}
   }, []);
 
   const activeProduct = productsList[selectedProductIndex] || productsList[0] || LUXURY_PRODUCTS[0];
 
   const scrollToProducts = () => {
-
     const el = document.getElementById('products-collection');
     el?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const reviews = lang === 'ar'
+  const reviews: CustomerReview[] = lang === 'ar'
     ? [
         {
+          id: 'rev-def-1',
           name: 'سفيان بناني',
           city: 'الدار البيضاء',
           date: 'منذ يومين',
           rating: 5,
-          comment: 'تبارك الله، المحفظة رويال كونياك جودة الجلد الطبيعي ممتازة وخياطة متقونة. فحصت السلعة قبل ما نخلص الموزع.'
+          comment: 'تبارك الله، المحفظة رويال كونياك جودة الجلد الطبيعي ممتازة وخياطة متقونة. فحصت السلعة قبل ما نخلص الموزع.',
+          isVerified: true,
+          createdAt: '2026-03-20T10:00:00Z',
         },
         {
+          id: 'rev-def-2',
           name: 'عمر التازي',
           city: 'الرباط',
           date: 'منذ 4 أيام',
           rating: 5,
-          comment: 'شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة. تعامل راقي.'
+          comment: 'شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة. تعامل راقي.',
+          isVerified: true,
+          createdAt: '2026-03-18T10:00:00Z',
         },
         {
+          id: 'rev-def-3',
           name: 'ياسين المودن',
           city: 'طنجة',
           date: 'منذ أسبوع',
           rating: 5,
-          comment: 'غلاف جواز السفر فخم وعملي، الجلد الطبيعي سميك ولمسته نقية. خدمة احترافية.'
+          comment: 'غلاف جواز السفر فخم وعملي، الجلد الطبيعي سميك ولمسته نقية. خدمة احترافية.',
+          isVerified: true,
+          createdAt: '2026-03-15T10:00:00Z',
         },
         {
+          id: 'rev-def-4',
           name: 'مهدي الصقلي',
           city: 'مراكش',
           date: 'منذ أسبوعين',
           rating: 5,
-          comment: 'أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان.'
+          comment: 'أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان.',
+          isVerified: true,
+          createdAt: '2026-03-08T10:00:00Z',
         }
       ]
     : [
         {
+          id: 'rev-def-1',
           name: 'Soufiane Bennani',
           city: 'Casablanca',
           date: 'Il y a 2 jours',
           rating: 5,
-          comment: 'Superbe qualité en cuir naturel, coutures très soignées. Colis vérifié avant paiement au livreur.'
+          comment: 'Superbe qualité en cuir naturel, coutures très soignées. Colis vérifié avant paiement au livreur.',
+          isVerified: true,
+          createdAt: '2026-03-20T10:00:00Z',
         },
         {
+          id: 'rev-def-2',
           name: 'Omar Tazi',
           city: 'Rabat',
           date: 'Il y a 4 jours',
           rating: 5,
-          comment: 'Offre Duo 2 pièces à 189 DH excellente. Emballage kraft soigné et livraison rapide en 24h.'
+          comment: 'Offre Duo 2 pièces à 189 DH excellente. Emballage kraft soigné et livraison rapide en 24h.',
+          isVerified: true,
+          createdAt: '2026-03-18T10:00:00Z',
         },
         {
+          id: 'rev-def-3',
           name: 'Yassine El Moden',
           city: 'Tanger',
           date: 'Il y a 1 semaine',
           rating: 5,
-          comment: 'Protège-passeport raffiné et robuste en cuir naturel. Très pratique et service impeccable.'
+          comment: 'Protège-passeport raffiné et robuste en cuir naturel. Très pratique et service impeccable.',
+          isVerified: true,
+          createdAt: '2026-03-15T10:00:00Z',
         },
         {
+          id: 'rev-def-4',
           name: 'Mehdi Skalli',
           city: 'Marrakech',
           date: 'Il y a 2 semaines',
           rating: 5,
-          comment: 'Excellente finition artisanale. Le cuir naturel est magnifique, je recommande vivement.'
+          comment: 'Excellente finition artisanale. Le cuir naturel est magnifique, je recommande vivement.',
+          isVerified: true,
+          createdAt: '2026-03-08T10:00:00Z',
         }
       ];
 
@@ -506,7 +539,72 @@ export function AltajLandingPage() {
         </div>
       </section>
 
-      {/* 5. VERIFIED CUSTOMER REVIEWS */}
+      {/* 5. NOTRE ATELIER SECTION (Authentic Artisan Handcrafted Leather Workshop) */}
+      <section className="py-12 sm:py-16 bg-[#FAF7F2] border-b border-[#E8DFD3]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            {/* Workshop Image */}
+            <div className="lg:col-span-6 relative">
+              <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden shadow-xl border-4 border-white">
+                <Image
+                  src="/images/atelier/altaj-artisan-workshop.jpg"
+                  alt={lang === 'ar' ? 'طاولة الحرفي التقليدي بورشة التاج' : "Établi de l'artisan maroquinier ALTAJ"}
+                  fill
+                  className="object-cover"
+                />
+                <div className={`absolute bottom-3 ${isRtl ? 'right-3' : 'left-3'} bg-[#1E1916]/85 backdrop-blur-xs text-[#FFDE9E] px-3 py-1.5 rounded-xl text-[11px] font-bold border border-[#B89563]/30`}>
+                  ✨ {lang === 'ar' ? 'صناعة يدوية أصيلة بفاس' : 'Atelier Fès • 100% Fait Main'}
+                </div>
+              </div>
+            </div>
+
+            {/* Workshop Story Description */}
+            <div className={`lg:col-span-6 space-y-3 sm:space-y-4 ${isRtl ? 'text-right' : 'text-left'}`}>
+              <span className="text-[11px] font-bold text-[#8C5E35] bg-[#EFE4D6] px-3 py-1 rounded-full border border-[#DFCEBB]">
+                {lang === 'ar' ? 'أصالة الصانع المغربي' : 'Notre Atelier'}
+              </span>
+              <h2 className="text-xl sm:text-3xl font-black text-[#1E1916] font-serif">
+                {lang === 'ar' ? 'ورشة التاج للصناعة الجلدية بفاس' : "L'Atelier ALTAJ — Maroquinerie d'Excellence à Fès"}
+              </h2>
+              <p className="text-xs sm:text-sm text-[#5C5046] leading-relaxed">
+                {lang === 'ar'
+                  ? 'من قلب العاصمة الروحية فاس، نختار أجود جلود البقر المدبوغة نباتياً بالمواد الطبيعية. كل محفظة تمر عبر يد صانعنا المتمرس، بداية من القص اليدوي الدقيق وصولاً إلى خياطة السراجة المشمعة وختم التاج الذهبي.'
+                  : "Au cœur de Fès, berceau mondial de la maroquinerie d'art, nous sélectionnons les plus nobles cuirs naturels au tannage végétal. Chaque pièce est taillée, assemblée et cousue au point sellier sur l'établi de notre artisan avant d'être scellée du blason royal ALTAJ."}
+              </p>
+
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <div className="bg-white p-3 rounded-xl border border-[#E8DFD3]">
+                  <p className="font-bold text-xs text-[#1E1916]">
+                    {lang === 'ar' ? 'دباغة نباتية 100%' : 'Tannage Végétal'}
+                  </p>
+                  <p className="text-[11px] text-[#7A6E63] mt-0.5">
+                    {lang === 'ar' ? 'بدون كروم، تحافظ على رائحة الجلد' : 'Sans chrome chimique'}
+                  </p>
+                </div>
+                <div className="bg-white p-3 rounded-xl border border-[#E8DFD3]">
+                  <p className="font-bold text-xs text-[#1E1916]">
+                    {lang === 'ar' ? 'خياطة يدوية متينة' : 'Point Sellier Main'}
+                  </p>
+                  <p className="text-[11px] text-[#7A6E63] mt-0.5">
+                    {lang === 'ar' ? 'خيط مشمع يدوم لسنوات' : 'Fil ciré inusable'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="pt-1">
+                <Link
+                  href="/our-story"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8C5E35] hover:text-[#5E3C1D] underline"
+                >
+                  <span>{lang === 'ar' ? 'اكتشف قصة ورشتنا كاملة ←' : 'Découvrir toute l’histoire de notre atelier →'}</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. VERIFIED CUSTOMER REVIEWS (With WhatsApp Audio Note Support) */}
       <section className="py-12 sm:py-16 bg-white border-b border-[#E8E1D5]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <div className="text-center max-w-xl mx-auto mb-8 space-y-1">
@@ -519,22 +617,33 @@ export function AltajLandingPage() {
           </div>
 
           <div className="flex md:grid md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 overflow-x-auto pb-3 snap-x snap-mandatory no-scrollbar -mx-4 px-4 md:mx-0 md:px-0">
-            {reviews.map((rev, i) => (
+            {(dynamicReviews.length > 0 ? dynamicReviews : reviews).map((rev, i) => (
               <div
-                key={i}
+                key={rev.id || i}
                 className={`w-[82vw] sm:w-[280px] md:w-auto shrink-0 snap-start bg-[#FCFAF7] p-4 rounded-2xl border border-[#E8E0D4] flex flex-col justify-between shadow-2xs ${
                   isRtl ? 'text-right' : 'text-left'
                 }`}
               >
                 <div>
                   <div className="flex items-center gap-0.5 text-[#D9A74A] mb-2">
-                    {[...Array(rev.rating)].map((_, s) => (
+                    {[...Array(rev.rating || 5)].map((_, s) => (
                       <Star key={s} className="w-3.5 h-3.5 fill-current" />
                     ))}
                   </div>
                   <p className="text-xs text-[#4C4138] leading-relaxed italic mb-3">
-                    "{rev.comment}"
+                    &quot;{rev.comment}&quot;
                   </p>
+
+                  {/* WhatsApp Voice Note Player if present */}
+                  {rev.audioUrl && (
+                    <div className="mb-3">
+                      <WhatsAppAudioPlayer
+                        audioUrl={rev.audioUrl}
+                        senderName={rev.name}
+                        durationLabel={rev.audioDuration}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 <div className="border-t border-[#F2ECE3] pt-2">

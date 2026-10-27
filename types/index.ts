@@ -310,3 +310,18 @@ export interface WhatsAppBotConfig {
   };
 }
 
+export interface CustomerReview {
+  id: string;
+  name: string;
+  city: string;
+  rating: number;
+  comment: string;
+  date: string;
+  isVerified: boolean;
+  audioUrl?: string;
+  audioDuration?: string;
+  productSlug?: string;
+  createdAt: string;
+}
+
+

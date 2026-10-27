@@ -48,10 +48,6 @@ export function BrandFooter() {
 
         <div className="flex items-center justify-center gap-3 text-[10px] text-[#716458] pt-1">
           <span>© {new Date().getFullYear()} ALTAJ LEATHER • {lang === 'ar' ? 'صناعة يدوية بالمغرب 🇲🇦' : 'Fait main au Maroc 🇲🇦'}</span>
-          <span>•</span>
-          <Link href="/admin/products" className="hover:text-[#B89563] transition-colors underline">
-            ⚙️ {lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}
-          </Link>
         </div>
       </div>
     </footer>

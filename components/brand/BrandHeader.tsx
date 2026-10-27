@@ -217,15 +217,6 @@ export function BrandHeader() {
           {/* Right Action CTAs */}
           <div className="flex items-center gap-2">
             <Link
-              href="/admin/products"
-              title="لوحة التحكم / Gestion Produits"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl bg-white hover:bg-[#FAF4EC] border border-[#DECDBB] text-[#5A4031] text-xs font-bold transition-all shadow-2xs hover:border-[#8C5E35]"
-            >
-              <span>⚙️</span>
-              <span>{lang === 'ar' ? 'لوحة التحكم' : 'Dashboard'}</span>
-            </Link>
-
-            <Link
               href="/products"
               className="px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-gradient-to-r from-[#8C5E35] to-[#5A381E] text-white text-xs sm:text-sm font-bold shadow-xs hover:brightness-110 active:scale-95 transition-all flex items-center gap-1.5"
             >
@@ -368,14 +359,6 @@ export function BrandHeader() {
 
               {/* Drawer Footer */}
               <div className="p-4 border-t border-[#F0EBE3] bg-[#FAF7F2] space-y-2">
-                <Link
-                  href="/admin/products"
-                  className="w-full py-2.5 px-4 rounded-xl bg-white border border-[#D5C6B5] text-[#5A4031] font-bold text-xs flex items-center justify-center gap-2 shadow-2xs hover:bg-[#FAF4EC]"
-                >
-                  <span>⚙️</span>
-                  <span>{lang === 'ar' ? 'لوحة التحكم وإدارة المنتجات' : 'Tableau de bord (Gestion Produits)'}</span>
-                </Link>
-
                 <a
                   href="https://wa.me/212693148230?text=Bonjour%20Altajleather"
                   target="_blank"

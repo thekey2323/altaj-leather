@@ -5,7 +5,7 @@ import { AdminRole } from "@/types";
 
 interface AdminUser {
   id: string;
-  email: string;
+  username: string;
   name: string;
   role: AdminRole;
 }
@@ -13,7 +13,8 @@ interface AdminUser {
 interface AdminAuthContextType {
   user: AdminUser | null;
   isAuthenticated: boolean;
-  login: (email: string, role?: AdminRole) => void;
+  isReady: boolean;
+  login: (username: string, password: string) => { success: boolean; error?: string };
   logout: () => void;
 }
 
@@ -21,50 +22,71 @@ const AdminAuthContext = createContext<AdminAuthContextType | undefined>(undefin
 
 const ADMIN_AUTH_KEY = "altaj_admin_session_v1";
 
+// Valid Admin Credentials
+const VALID_CREDENTIALS = [
+  { username: "admin", password: "altaj2026", name: "Othmane (Fondateur)", role: "OWNER" as AdminRole },
+  { username: "altaj", password: "altaj", name: "Othmane (Fondateur)", role: "OWNER" as AdminRole },
+  { username: "admin@altajleather.ma", password: "altaj", name: "Admin ALTAJ", role: "OWNER" as AdminRole },
+  { username: "admin", password: "altaj", name: "Admin ALTAJ", role: "OWNER" as AdminRole },
+];
+
 export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     try {
       const stored = localStorage.getItem(ADMIN_AUTH_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
-        setUser(parsed);
-        setIsAuthenticated(true);
-      } else {
-        // Provide default logged in session for demo testing
-        const defaultUser: AdminUser = {
-          id: "adm-1",
-          email: "admin@altajleather.ma",
-          name: "Othmane (Fondateur)",
-          role: "OWNER",
-        };
-        setUser(defaultUser);
-        setIsAuthenticated(true);
-        localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify(defaultUser));
+        if (parsed && parsed.username) {
+          setUser(parsed);
+          setIsAuthenticated(true);
+        }
       }
     } catch {
-      setIsAuthenticated(true);
+      // storage disabled or corrupted
+    } finally {
+      setIsReady(true);
     }
   }, []);
 
-  const login = (email: string, role: AdminRole = "OWNER") => {
-    const newUser: AdminUser = {
-      id: `adm-${Date.now()}`,
-      email,
-      name: email.split("@")[0].toUpperCase(),
-      role,
+  const login = (usernameInput: string, passwordInput: string): { success: boolean; error?: string } => {
+    const cleanUser = usernameInput.trim().toLowerCase();
+    const cleanPass = passwordInput.trim();
+
+    const matched = VALID_CREDENTIALS.find(
+      (c) => c.username.toLowerCase() === cleanUser && c.password === cleanPass
+    );
+
+    if (matched) {
+      const newUser: AdminUser = {
+        id: `adm-${Date.now()}`,
+        username: matched.username,
+        name: matched.name,
+        role: matched.role,
+      };
+      setUser(newUser);
+      setIsAuthenticated(true);
+      try {
+        localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify(newUser));
+      } catch {}
+      return { success: true };
+    }
+
+    return {
+      success: false,
+      error: "Nom d'utilisateur ou mot de passe incorrect. (Par défaut: admin / altaj)",
     };
-    setUser(newUser);
-    setIsAuthenticated(true);
-    localStorage.setItem(ADMIN_AUTH_KEY, JSON.stringify(newUser));
   };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem(ADMIN_AUTH_KEY);
+    try {
+      localStorage.removeItem(ADMIN_AUTH_KEY);
+    } catch {}
   };
 
   return (
@@ -72,6 +94,7 @@ export function AdminAuthProvider({ children }: { children: React.ReactNode }) {
       value={{
         user,
         isAuthenticated,
+        isReady,
         login,
         logout,
       }}

@@ -37,13 +37,18 @@ export default function OurStoryPage() {
         {/* SECTION 1: CRAFTSMANSHIP */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-md border border-[#E8DFD3]">
+            <div className="relative aspect-4/3 rounded-2xl overflow-hidden shadow-lg border-2 border-[#D9CAB8] group">
               <Image
-                src="/images/products/cognac-minimalist.jpg"
-                alt="ALTAJ Leathercraft"
+                src="/images/atelier/altaj-artisan-workshop.jpg"
+                alt="Atelier ALTAJ — Façonné à la main au Maroc"
                 fill
-                className="object-cover"
+                priority
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute bottom-2 left-2 right-2 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-lg flex items-center justify-between">
+                <span>{lang === 'ar' ? 'طاولة عمل الحرفي — دار التاج' : 'Atelier ALTAJ — Établi de l’Artisan'}</span>
+                <span className="text-[#FFDE9E]">100% Cuir Naturel</span>
+              </div>
             </div>
 
             <div className={`space-y-3.5 ${isRtl ? 'text-right' : 'text-left'}`}>

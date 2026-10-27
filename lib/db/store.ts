@@ -9,6 +9,7 @@ import {
   BundleOffer,
   MarketingCampaign,
   WalletCostBreakdown,
+  CustomerReview,
 } from "@/types";
 import {
   INITIAL_PRODUCTS,
@@ -27,7 +28,55 @@ const STORAGE_KEYS = {
   SETTINGS: "altaj_settings_v2",
   NOTIFICATIONS: "altaj_notifications_v2",
   CAMPAIGNS: "altaj_marketing_campaigns_v1",
+  REVIEWS: "altaj_reviews_v1",
 };
+
+export const INITIAL_REVIEWS: CustomerReview[] = [
+  {
+    id: "rev-1",
+    name: "Soufiane Bennani",
+    city: "Casablanca",
+    rating: 5,
+    comment: "تبارك الله، جودة الجلد الطبيعي ممتازة وخياطة متقونة بزاف. فحصت السلعة قبل ما نخلص الموزع والجلد رائحته نقية.",
+    date: "Il y a 2 jours",
+    isVerified: true,
+    productSlug: "altaj-classic-marron",
+    createdAt: "2026-10-25T14:30:00.000Z",
+  },
+  {
+    id: "rev-2",
+    name: "Omar Tazi",
+    "city": "Rabat",
+    rating: 5,
+    comment: "شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة. تعامل راقي جداً.",
+    date: "Il y a 4 jours",
+    isVerified: true,
+    productSlug: "all",
+    createdAt: "2026-10-23T11:20:00.000Z",
+  },
+  {
+    id: "rev-3",
+    name: "Yassine El Moden",
+    city: "Tanger",
+    rating: 5,
+    comment: "الجلد الطبيعي سميك ولمسته نقية، حجم مريح وعملي جداً في الجيب مع البنكية وبطاقة التعريف.",
+    date: "Il y a 1 semaine",
+    isVerified: true,
+    productSlug: "altaj-noir",
+    createdAt: "2026-10-20T09:15:00.000Z",
+  },
+  {
+    id: "rev-4",
+    name: "Mehdi Skalli",
+    city: "Marrakech",
+    rating: 5,
+    comment: "أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان اليدوي.",
+    date: "Il y a 2 semaines",
+    isVerified: true,
+    productSlug: "all",
+    createdAt: "2026-10-13T16:45:00.000Z",
+  },
+];
 
 // In-memory fallback cache for SSR
 let memoryProducts: Product[] = [...INITIAL_PRODUCTS];
@@ -36,6 +85,8 @@ let memoryCustomers: Customer[] = [...INITIAL_CUSTOMERS];
 let memoryLogs: InventoryLog[] = [...INITIAL_INVENTORY_LOGS];
 let memorySettings: StoreSettings = { ...INITIAL_SETTINGS };
 let memoryCampaigns: MarketingCampaign[] = [...INITIAL_CAMPAIGNS];
+let memoryReviews: CustomerReview[] = [...INITIAL_REVIEWS];
+
 
 function isBrowser(): boolean {
   return typeof window !== "undefined";
@@ -289,9 +340,73 @@ export function saveServerProducts(products: Product[]): void {
   memoryProducts = products;
 }
 
+// -------------------------------------------------------------
+// REVIEWS SERVICE (With WhatsApp Voice Note Support)
+// -------------------------------------------------------------
+export function getReviews(): CustomerReview[] {
+  if (isBrowser()) {
+    return getStored<CustomerReview[]>(STORAGE_KEYS.REVIEWS, INITIAL_REVIEWS);
+  }
+  return loadServerJson<CustomerReview[]>("reviews.json", memoryReviews);
+}
+
+export function saveReview(review: CustomerReview): CustomerReview {
+  const reviews = getReviews();
+  const index = reviews.findIndex((r) => r.id === review.id);
+  let updated: CustomerReview[];
+
+  if (index >= 0) {
+    updated = [...reviews];
+    updated[index] = review;
+  } else {
+    updated = [
+      {
+        ...review,
+        id: review.id || `rev-${Date.now()}`,
+        createdAt: review.createdAt || new Date().toISOString(),
+      },
+      ...reviews,
+    ];
+  }
+
+  if (isBrowser()) {
+    setStored(STORAGE_KEYS.REVIEWS, updated);
+    try {
+      fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(review),
+      }).catch(() => {});
+    } catch {}
+  }
+  saveServerJson("reviews.json", updated);
+  memoryReviews = updated;
+  return review;
+}
+
+export function deleteReview(id: string): void {
+  const reviews = getReviews().filter((r) => r.id !== id);
+  if (isBrowser()) {
+    setStored(STORAGE_KEYS.REVIEWS, reviews);
+    try {
+      fetch(`/api/reviews?id=${encodeURIComponent(id)}`, { method: "DELETE" }).catch(() => {});
+    } catch {}
+  }
+  saveServerJson("reviews.json", reviews);
+  memoryReviews = reviews;
+}
+
+export function saveServerReviews(reviews: CustomerReview[]): void {
+  if (isBrowser()) {
+    setStored(STORAGE_KEYS.REVIEWS, reviews);
+  }
+  saveServerJson("reviews.json", reviews);
+  memoryReviews = reviews;
+}
 
 // -------------------------------------------------------------
 // ORDERS SERVICE (COD Moroccan Engine)
+
 // -------------------------------------------------------------
 export function getOrders(): Order[] {
   if (isBrowser()) {
