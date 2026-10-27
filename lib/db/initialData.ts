@@ -22,354 +22,235 @@ export const INITIAL_SETTINGS: StoreSettings = {
 
 export const INITIAL_PRODUCTS: Product[] = [
   {
-    "id": "prod-cognac-royal",
-    "slug": "cognac-royal",
-    "name": "ALTAJ Royal Cognac",
-    "sku": "ALTAJ-ROYAL-COG",
-    "tagline": "Design vertical fin, couture sellier main et sceau royal gravé",
-    "description": "Confectionné à la main en cuir 100% naturel tannage végétal. Design vertical ultra-fin pour cartes et billets de banque sans aucun encombrement.",
-    "price": 129,
-    "compareAtPrice": 189,
+    "id": "prod-1793122106095",
+    "slug": "passeport-holder",
+    "name": "Passeport Holder",
+    "sku": "ALTAJ-229",
+    "tagline": "",
+    "description": "",
+    "price": 119,
+    "compareAtPrice": 169,
     "cost": 50,
-    "promotionBadge": "👑 PLUS DEMANDÉ",
+    "promotionBadge": "PROMO",
     "images": [
       {
-        "id": "img-cog-1",
-        "url": "/images/products/cognac-minimalist.jpg",
-        "alt": "Portefeuille Royal Cognac ALTAJ — Vue Principale",
-        "isFeatured": true,
-        "order": 1
-      },
-      {
-        "id": "img-cog-2",
-        "url": "/images/products/altaj-classic-brown-front.jpg",
-        "alt": "Vue d'ensemble avec couture écrue et couronne Taj",
-        "isFeatured": false,
-        "order": 2
-      },
-      {
-        "id": "img-cog-3",
-        "url": "/images/products/altaj-classic-brown-open.jpg",
-        "alt": "Vue ouverte avec compartiment billets 200 DH et cartes",
-        "isFeatured": false,
-        "order": 3
-      },
-      {
-        "id": "img-cog-4",
-        "url": "/images/products/altaj-classic-brown-interior.jpg",
-        "alt": "Détail intérieur du cuir naturel et des fentes pour cartes",
-        "isFeatured": false,
-        "order": 4
-      }
-    ],
-    "featuredImage": "/images/products/cognac-minimalist.jpg",
-    "stock": 19,
-    "lowStockThreshold": 5,
-    "category": "Portefeuilles",
-    "tags": ["Best-Seller", "Cuir Naturel", "Cognac"],
-    "status": "ACTIVE",
-    "materials": [
-      "100% Cuir Naturel Tannage Végétal",
-      "Fil ciré haute résistance",
-      "Tranches lissées main"
-    ],
-    "dimensions": "10.5 cm x 8.2 cm x 1.0 cm",
-    "handmadeIn": "Atelier ALTAJ — Maroc",
-    "bundleOffers": [
-      {
-        "id": "b-cog-1",
-        "name": "Offre 1 Pièce",
-        "quantity": 1,
-        "price": 129,
-        "badge": "PRIX UNITAIRE",
-        "savings": 60,
-        "isPopular": false
-      },
-      {
-        "id": "b-cog-2",
-        "name": "Offre 2 Pièces (Duo)",
-        "quantity": 2,
-        "price": 189,
-        "badge": "🔥 PLUS DEMANDÉ — LIVRAISON GRATUITE",
-        "savings": 189,
-        "isPopular": true
-      },
-      {
-        "id": "b-cog-3",
-        "name": "Offre 3 Pièces",
-        "quantity": 3,
-        "price": 249,
-        "badge": "LIVRAISON GRATUITE",
-        "savings": 318,
-        "isPopular": false
-      }
-    ],
-    "relatedProductSlugs": ["passport-cover", "moroccan-bifold", "black-snap"],
-    "seoTitle": "ALTAJ Royal Cognac — 100% Cuir Naturel Fait Main",
-    "seoDescription": "Portefeuille fin en cuir 100% naturel. Paiement à la livraison et inspection avant paiement.",
-    "rating": 4.96,
-    "reviewCount": 128,
-    "createdAt": "2026-08-15T10:00:00Z",
-    "updatedAt": "2026-10-27T16:00:00.000Z"
-  },
-  {
-    "id": "prod-passport-cover",
-    "slug": "passport-cover",
-    "name": "ALTAJ Passport Cover",
-    "sku": "ALTAJ-PASS-HAV",
-    "tagline": "Protection élégante pour passeport et carte d’embarquement en cuir naturel",
-    "description": "Fabriqué à la main d’une seule pièce de cuir 100% naturel pour préserver votre passeport et billets avec raffinement et solidité.",
-    "price": 129,
-    "compareAtPrice": 189,
-    "cost": 50,
-    "promotionBadge": "🇲🇦 VOYAGE",
-    "images": [
-      {
-        "id": "img-pass-1",
+        "id": "img-1793122085418",
         "url": "/images/products/passport-cover.jpg",
-        "alt": "Protège-passeport ALTAJ Havana",
+        "alt": "",
         "isFeatured": true,
         "order": 1
       },
       {
-        "id": "img-pass-2",
-        "url": "/images/products/altaj-classic-brown-open.jpg",
-        "alt": "Vue dépliée & fentes pour passeport et cartes",
-        "isFeatured": false,
-        "order": 2
-      },
-      {
-        "id": "img-pass-3",
+        "id": "img-1793122176526",
         "url": "/images/products/cognac-minimalist.jpg",
-        "alt": "Détail cuir naturel et finitions",
+        "alt": "Passeport Holder",
         "isFeatured": false,
-        "order": 3
+        "order": 1
       }
     ],
     "featuredImage": "/images/products/passport-cover.jpg",
-    "stock": 14,
-    "lowStockThreshold": 4,
-    "category": "Accessoires de Voyage",
-    "tags": ["Voyage", "Cuir Naturel", "Passeport"],
+    "stock": 20,
+    "lowStockThreshold": 5,
+    "category": "Portefeuilles",
+    "tags": [
+      "100% Cuir Naturel"
+    ],
     "status": "ACTIVE",
     "materials": [
-      "100% Cuir Naturel Résistant",
-      "Couture sellier avec coins renforcés",
-      "Finition cire naturelle"
+      "100% Cuir Naturel Tannage Végétal",
+      "Fil ciré haute résistance"
     ],
-    "dimensions": "14.2 cm x 10.0 cm",
+    "dimensions": "10.8 cm x 8.4 cm",
     "handmadeIn": "Atelier ALTAJ — Maroc",
     "bundleOffers": [
       {
-        "id": "b-pass-1",
-        "name": "Offre 1 Pièce",
+        "id": "b-1793122082517-1",
+        "name": "1 Portefeuille",
         "quantity": 1,
         "price": 129,
         "badge": "PRIX UNITAIRE",
-        "savings": 60,
-        "isPopular": false
+        "savings": 60
       },
       {
-        "id": "b-pass-2",
-        "name": "Offre 2 Pièces (Duo)",
+        "id": "b-1793122082517-2",
+        "name": "2 Portefeuilles (Pack Duo)",
         "quantity": 2,
         "price": 189,
-        "badge": "🔥 PLUS DEMANDÉ — LIVRAISON GRATUITE",
+        "badge": "MEILLEURE OFFRE — LIVRAISON GRATUITE",
         "savings": 189,
         "isPopular": true
-      },
-      {
-        "id": "b-pass-3",
-        "name": "Offre 3 Pièces",
-        "quantity": 3,
-        "price": 249,
-        "badge": "LIVRAISON GRATUITE",
-        "savings": 318,
-        "isPopular": false
       }
     ],
-    "relatedProductSlugs": ["cognac-royal", "moroccan-bifold", "black-snap"],
-    "seoTitle": "Protège-Passeport ALTAJ — 100% Cuir Naturel",
-    "seoDescription": "Protège-passeport artisanal en cuir naturel. Paiement à la livraison au Maroc.",
-    "rating": 4.98,
-    "reviewCount": 94,
-    "createdAt": "2026-08-20T14:30:00Z",
-    "updatedAt": "2026-10-27T16:00:00.000Z"
+    "relatedProductSlugs": [],
+    "seoTitle": "",
+    "seoDescription": "",
+    "rating": 5,
+    "reviewCount": 1,
+    "createdAt": "2026-10-27T17:28:26.095Z",
+    "updatedAt": "2026-10-27T17:30:05.388Z"
   },
   {
-    "id": "prod-moroccan-bifold",
-    "slug": "moroccan-bifold",
-    "name": "ALTAJ Classic Bifold",
-    "sku": "ALTAJ-BIF-VNT",
-    "tagline": "Grande capacité pour billets marocains (200 DH à plat) et 6 cartes",
-    "description": "Design traditionnel taillé avec précision pour la monnaie marocaine et les cartes, en cuir naturel souple et durable.",
-    "price": 129,
-    "compareAtPrice": 189,
+    "id": "prod-1",
+    "slug": "altaj-classic-marron",
+    "name": "ALTAJ CLASSIC — MARRON",
+    "sku": "ALTAJ-CLS-BRN",
+    "tagline": "Le chef-d'œuvre intemporel en cuir patiné marron chaud",
+    "description": "Confectionné à la main par nos maîtres artisans maroquiniers, le portefeuille ALTAJ Classic Marron marie le raffinement du cuir de vachette pleine fleur à une robustesse incomparable. Doté d'une finition biseautée au fil de lin ciré écru et du sceau royal Taj embossé à chaud, il est conçu pour traverser les décennies en développant une somptueuse patine naturelle.",
+    "price": 119,
+    "compareAtPrice": 169,
     "cost": 50,
-    "promotionBadge": "⭐ CAPACITÉ",
+    "promotionBadge": "PROMO",
     "images": [
       {
-        "id": "img-bif-1",
-        "url": "/images/products/bifold-morocco.jpg",
-        "alt": "Portefeuille Bifold ALTAJ",
+        "id": "img-1793115538324",
+        "url": "/images/products/altaj-classic-marron-custom-1.jpg",
+        "alt": "ALTAJ CLASSIC — MARRON",
         "isFeatured": true,
         "order": 1
       },
       {
-        "id": "img-bif-2",
-        "url": "/images/products/altaj-classic-brown-open.jpg",
-        "alt": "Vue compartiment billets 200 DH à plat",
+        "id": "img-1793115569292",
+        "url": "/images/products/altaj-classic-marron-custom-2.jpg",
+        "alt": "ALTAJ CLASSIC — MARRON",
         "isFeatured": false,
-        "order": 2
+        "order": 1
       },
       {
-        "id": "img-bif-3",
-        "url": "/images/products/altaj-classic-brown-interior.jpg",
-        "alt": "Détails fentes cartes et doublure",
+        "id": "img-1793115561568",
+        "url": "/images/products/altaj-classic-marron-custom-3.jpg",
+        "alt": "ALTAJ CLASSIC — MARRON",
         "isFeatured": false,
-        "order": 3
-      },
-      {
-        "id": "img-bif-4",
-        "url": "/images/products/altaj-classic-brown-front.jpg",
-        "alt": "Finition artisanale ALTAJ",
-        "isFeatured": false,
-        "order": 4
+        "order": 1
       }
     ],
-    "featuredImage": "/images/products/bifold-morocco.jpg",
-    "stock": 25,
+    "featuredImage": "/images/products/altaj-classic-marron-custom-1.jpg",
+    "stock": 6,
     "lowStockThreshold": 5,
     "category": "Portefeuilles",
-    "tags": ["Classique", "Cuir Naturel", "Bifold"],
+    "tags": [
+      "Best-Seller",
+      "Cuir Vachette",
+      "Marron"
+    ],
     "status": "ACTIVE",
     "materials": [
-      "100% Cuir Naturel Souple",
-      "Couture sellier renforcée",
-      "Doublure naturelle"
+      "Cuir de vachette pleine fleur tannage végétal",
+      "Fil ciré haute ténacité écru",
+      "Tranches lissées à la cire d'abeille"
     ],
-    "dimensions": "11.0 cm x 8.8 cm x 1.2 cm",
-    "handmadeIn": "Atelier ALTAJ — Maroc",
+    "dimensions": "10.8 cm x 8.4 cm x 1.2 cm",
+    "handmadeIn": "Atelier ALTAJ — Fès, Maroc",
     "bundleOffers": [
       {
-        "id": "b-bif-1",
-        "name": "Offre 1 Pièce",
+        "id": "b-1",
+        "name": "1 Portefeuille",
         "quantity": 1,
-        "price": 129,
+        "price": 119,
         "badge": "PRIX UNITAIRE",
-        "savings": 60,
+        "savings": 50,
         "isPopular": false
       },
       {
-        "id": "b-bif-2",
-        "name": "Offre 2 Pièces (Duo)",
+        "id": "b-2",
+        "name": "2 Portefeuilles (Pack Duo)",
         "quantity": 2,
-        "price": 189,
-        "badge": "🔥 PLUS DEMANDÉ — LIVRAISON GRATUITE",
-        "savings": 189,
+        "price": 200,
+        "badge": "MEILLEURE OFFRE — LIVRAISON GRATUITE",
+        "savings": 138,
         "isPopular": true
       },
       {
-        "id": "b-bif-3",
-        "name": "Offre 3 Pièces",
+        "id": "b-3",
+        "name": "3 Portefeuilles (Pack Famille)",
         "quantity": 3,
-        "price": 249,
-        "badge": "LIVRAISON GRATUITE",
-        "savings": 318,
+        "price": 289,
+        "badge": "PACK 3 — LIVRAISON GRATUITE",
+        "savings": 218,
         "isPopular": false
       }
     ],
-    "relatedProductSlugs": ["cognac-royal", "passport-cover", "black-snap"],
-    "seoTitle": "ALTAJ Classic Bifold — 100% Cuir Naturel",
-    "seoDescription": "Portefeuille bifold en cuir naturel. Grande capacité billets et cartes, paiement à la livraison.",
+    "relatedProductSlugs": [
+      "altaj-noir",
+      "altaj-classic-open",
+      "altaj-signature"
+    ],
+    "seoTitle": "ALTAJ Classic Marron — Portefeuille Artisanal en Cuir Véritable au Maroc",
+    "seoDescription": "Achetez le portefeuille ALTAJ Classic Marron fait main au Maroc. Cuir de vachette pleine fleur, finitions soignées, paiement à la livraison partout au Maroc.",
     "rating": 4.95,
-    "reviewCount": 164,
-    "createdAt": "2026-08-25T11:00:00Z",
-    "updatedAt": "2026-10-27T16:00:00.000Z"
+    "reviewCount": 42,
+    "createdAt": "2026-10-27T16:53:08.977Z",
+    "updatedAt": "2026-10-27T16:53:08.977Z"
   },
   {
     "id": "prod-black-snap",
-    "slug": "black-snap",
-    "name": "ALTAJ Snap Cardholder",
-    "sku": "ALTAJ-SNP-BLK",
-    "tagline": "Cuir naturel noir, surpiqûre rouge main et bouton pression sécurisé",
-    "description": "Fabriqué en cuir 100% naturel noir résistant, avec bouton pression métallique assurant un maintien parfait de vos cartes.",
-    "price": 129,
-    "compareAtPrice": 189,
+    "slug": "altaj-noir",
+    "name": "ALTAJ NOIR",
+    "sku": "ALTAJ-CLS-BLK",
+    "tagline": "Cuir naturel noir, surpiqûre soignée et fermoir sécurisé",
+    "description": "Confectionné en cuir 100% naturel noir avec finition soignée et format ultra pratique pour cartes et billets.",
+    "price": 119,
+    "compareAtPrice": 169,
     "cost": 50,
-    "promotionBadge": "💎 SÉCURITÉ",
+    "promotionBadge": "PROMO",
     "images": [
       {
-        "id": "img-snp-1",
-        "url": "/images/products/black-snap-wallet.jpg",
-        "alt": "Porte-cartes ALTAJ Snap Noir",
+        "id": "img-noir-1",
+        "url": "/images/products/altaj-noir-front.jpg",
+        "alt": "ALTAJ NOIR — Face",
         "isFeatured": true,
         "order": 1
       },
       {
-        "id": "img-snp-2",
-        "url": "/images/products/altaj-noir-front.jpg",
-        "alt": "Vue face cuir noir et logo or",
+        "id": "img-noir-2",
+        "url": "/images/products/altaj-noir-open.jpg",
+        "alt": "ALTAJ NOIR — Vue Ouverte",
         "isFeatured": false,
         "order": 2
-      },
-      {
-        "id": "img-snp-3",
-        "url": "/images/products/altaj-noir-open.jpg",
-        "alt": "Vue déployée fentes billets & cartes",
-        "isFeatured": false,
-        "order": 3
       }
     ],
-    "featuredImage": "/images/products/black-snap-wallet.jpg",
-    "stock": 21,
-    "lowStockThreshold": 4,
-    "category": "Porte-Cartes",
-    "tags": ["Noir", "Cuir Naturel", "Snap"],
+    "featuredImage": "/images/products/altaj-noir-front.jpg",
+    "stock": 4,
+    "lowStockThreshold": 2,
+    "category": "Portefeuilles",
+    "tags": [
+      "100% Cuir Naturel",
+      "Noir"
+    ],
     "status": "ACTIVE",
     "materials": [
       "100% Cuir Naturel Noir",
-      "Surpiqûre rouge haute résistance",
-      "Bouton pression métallique"
+      "Fil haute résistance"
     ],
     "dimensions": "10.2 cm x 7.5 cm x 0.9 cm",
     "handmadeIn": "Atelier ALTAJ — Maroc",
     "bundleOffers": [
       {
-        "id": "b-snp-1",
+        "id": "b-noir-1",
         "name": "Offre 1 Pièce",
         "quantity": 1,
-        "price": 129,
+        "price": 119,
         "badge": "PRIX UNITAIRE",
-        "savings": 60,
-        "isPopular": false
+        "savings": 50
       },
       {
-        "id": "b-snp-2",
+        "id": "b-noir-2",
         "name": "Offre 2 Pièces (Duo)",
         "quantity": 2,
         "price": 189,
         "badge": "🔥 PLUS DEMANDÉ — LIVRAISON GRATUITE",
-        "savings": 189,
+        "savings": 149,
         "isPopular": true
-      },
-      {
-        "id": "b-snp-3",
-        "name": "Offre 3 Pièces",
-        "quantity": 3,
-        "price": 249,
-        "badge": "LIVRAISON GRATUITE",
-        "savings": 318,
-        "isPopular": false
       }
     ],
-    "relatedProductSlugs": ["cognac-royal", "passport-cover", "moroccan-bifold"],
-    "seoTitle": "ALTAJ Snap Cardholder — 100% Cuir Naturel",
-    "seoDescription": "Porte-cartes compact en cuir naturel noir avec bouton pression. Livraison au Maroc.",
-    "rating": 4.93,
-    "reviewCount": 88,
-    "createdAt": "2026-09-01T09:00:00Z",
-    "updatedAt": "2026-10-27T16:00:00.000Z"
+    "relatedProductSlugs": [
+      "altaj-classic-marron"
+    ],
+    "seoTitle": "ALTAJ NOIR — 100% Cuir Naturel",
+    "seoDescription": "Portefeuille ALTAJ Noir en cuir naturel 100%. Livraison partout au Maroc.",
+    "rating": 5,
+    "reviewCount": 48,
+    "createdAt": "2026-10-27T17:00:59.949Z",
+    "updatedAt": "2026-10-27T17:00:59.961Z"
   }
 ];
 

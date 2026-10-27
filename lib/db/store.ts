@@ -21,7 +21,7 @@ import {
 } from "./initialData";
 
 const STORAGE_KEYS = {
-  PRODUCTS: "altaj_products_v2",
+  PRODUCTS: "altaj_products_v3",
   ORDERS: "altaj_orders_v2",
   CUSTOMERS: "altaj_customers_v2",
   INVENTORY_LOGS: "altaj_inventory_logs_v2",
@@ -215,6 +215,13 @@ export function saveProduct(product: Product): Product {
 
   if (isBrowser()) {
     setStored(STORAGE_KEYS.PRODUCTS, updated);
+    try {
+      fetch("/api/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(product),
+      }).catch(() => {});
+    } catch {}
   }
   saveServerJson("products.json", updated);
   memoryProducts = updated;

@@ -41,7 +41,6 @@ export function AltajLandingPage() {
         if (Array.isArray(stored) && stored.length > 0) {
           const adapted = stored.map(adaptStoreProductToLuxury);
           setProductsList(adapted);
-          return;
         }
         const res = await fetch('/api/products');
         if (res.ok) {
