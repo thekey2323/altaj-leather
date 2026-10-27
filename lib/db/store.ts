@@ -693,6 +693,20 @@ export function deleteOrder(orderId: string): boolean {
   return true;
 }
 
+export function deleteOrders(orderIds: string[]): boolean {
+  if (!orderIds || orderIds.length === 0) return true;
+  const idSet = new Set(orderIds);
+  const orders = getOrders();
+  const updated = orders.filter((o) => !idSet.has(o.id) && !idSet.has(o.orderNumber));
+
+  if (isBrowser()) {
+    setStored(STORAGE_KEYS.ORDERS, updated);
+  }
+  saveServerJson("orders.json", updated);
+  memoryOrders = updated;
+  return true;
+}
+
 export interface PurgeOrdersOptions {
   keepDays?: number; // e.g. 7, 14, 30
   onlySamples?: boolean; // clear test / sample mock orders

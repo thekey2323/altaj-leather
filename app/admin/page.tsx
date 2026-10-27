@@ -22,7 +22,7 @@ import {
   X,
   Save
 } from "lucide-react";
-import { getOrders, updateOrderStatus, deleteOrder, updateOrder } from "@/lib/db/store";
+import { getOrders, updateOrderStatus, deleteOrder, deleteOrders, purgeOrders, updateOrder } from "@/lib/db/store";
 import { Order, OrderStatus } from "@/types";
 
 export default function SimpleCodDashboard() {
@@ -31,6 +31,8 @@ export default function SimpleCodDashboard() {
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
   const [loading, setLoading] = useState(false);
   const [notification, setNotification] = useState<string | null>(null);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [isDeletingBulk, setIsDeletingBulk] = useState(false);
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -61,14 +63,103 @@ export default function SimpleCodDashboard() {
     }
     deleteOrder(orderId);
     setOrders((prev) => prev.filter((o) => o.id !== orderId && o.orderNumber !== orderId));
+    setSelectedOrderIds((prev) => prev.filter((id) => id !== orderId));
     setNotification(`Commande #${orderNum} supprimée.`);
     setTimeout(() => setNotification(null), 3000);
 
     try {
-      await fetch(`/api/orders/${orderId}`, {
+      await fetch(`/api/orders?id=${encodeURIComponent(orderId)}`, {
         method: "DELETE",
       });
     } catch {}
+  };
+
+  const handleSelectAll = () => {
+    const currentFilteredIds = filteredOrders.map((o) => o.id);
+    const areAllSelected =
+      currentFilteredIds.length > 0 &&
+      currentFilteredIds.every((id) => selectedOrderIds.includes(id));
+
+    if (areAllSelected) {
+      setSelectedOrderIds((prev) => prev.filter((id) => !currentFilteredIds.includes(id)));
+    } else {
+      setSelectedOrderIds((prev) => Array.from(new Set([...prev, ...currentFilteredIds])));
+    }
+  };
+
+  const handleToggleSelect = (orderId: string) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedOrderIds.length === 0) return;
+    const count = selectedOrderIds.length;
+    if (!confirm(`Êtes-vous sûr de vouloir supprimer définitivement ces ${count} commande(s) ?`)) {
+      return;
+    }
+
+    setIsDeletingBulk(true);
+    const idsToDelete = [...selectedOrderIds];
+
+    // Optimistically update UI
+    setOrders((prev) =>
+      prev.filter((o) => !idsToDelete.includes(o.id) && !idsToDelete.includes(o.orderNumber))
+    );
+    setSelectedOrderIds([]);
+
+    // Delete locally
+    deleteOrders(idsToDelete);
+
+    // Delete from Supabase & API
+    try {
+      await fetch(`/api/orders?ids=${encodeURIComponent(idsToDelete.join(","))}`, {
+        method: "DELETE",
+      });
+    } catch (e) {
+      console.warn("Bulk delete API warning:", e);
+    } finally {
+      setIsDeletingBulk(false);
+    }
+
+    setNotification(`${count} commande(s) supprimée(s) avec succès.`);
+    setTimeout(() => setNotification(null), 3500);
+  };
+
+  const handleDeleteAllOrders = async () => {
+    if (orders.length === 0) return;
+    if (
+      !confirm(
+        `ATTENTION : Voulez-vous vraiment supprimer TOUTES les commandes (${orders.length}) ? Cette action est irréversible.`
+      )
+    ) {
+      return;
+    }
+
+    setIsDeletingBulk(true);
+    const totalCount = orders.length;
+
+    // Clear state
+    setOrders([]);
+    setSelectedOrderIds([]);
+
+    // Local purge
+    purgeOrders({ all: true });
+
+    // Supabase & API purge
+    try {
+      await fetch("/api/orders?all=true", {
+        method: "DELETE",
+      });
+    } catch (e) {
+      console.warn("Delete all orders API warning:", e);
+    } finally {
+      setIsDeletingBulk(false);
+    }
+
+    setNotification(`Toutes les commandes (${totalCount}) ont été supprimées.`);
+    setTimeout(() => setNotification(null), 3500);
   };
 
   const handleSaveOrderEdit = async (e: React.FormEvent) => {
@@ -180,7 +271,20 @@ export default function SimpleCodDashboard() {
         </div>
 
         {/* Quick action shortcuts */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {orders.length > 0 && (
+            <button
+              type="button"
+              onClick={handleDeleteAllOrders}
+              disabled={isDeletingBulk}
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-300 text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+              title="Supprimer toutes les commandes"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Tout Supprimer ({orders.length})</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={fetchOrders}
@@ -283,11 +387,53 @@ export default function SimpleCodDashboard() {
 
         </div>
 
+        {/* Bulk Action Bar when items selected */}
+        {selectedOrderIds.length > 0 && (
+          <div className="bg-amber-50 border border-amber-300 rounded-xl p-3 flex flex-wrap items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-amber-950">
+                {selectedOrderIds.length} commande(s) sélectionnée(s) sur {filteredOrders.length}
+              </span>
+              <button
+                type="button"
+                onClick={() => setSelectedOrderIds([])}
+                className="text-xs text-amber-800 underline hover:text-amber-950 font-semibold cursor-pointer ml-1"
+              >
+                Tout désélectionner
+              </button>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleDeleteSelected}
+                disabled={isDeletingBulk}
+                className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Supprimer la sélection ({selectedOrderIds.length})</span>
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Orders Table */}
         <div className="overflow-x-auto -mx-3.5 sm:mx-0">
           <table className="w-full text-xs text-left">
             <thead className="bg-[#FAF7F2] text-slate-600 border-b border-[#EAE3D9] uppercase text-[10px] tracking-wider font-bold">
               <tr>
+                <th className="p-3 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    aria-label="Sélectionner toutes les commandes"
+                    checked={
+                      filteredOrders.length > 0 &&
+                      filteredOrders.every((o) => selectedOrderIds.includes(o.id))
+                    }
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-[#8C5E35] focus:ring-[#8C5E35] cursor-pointer accent-[#8C5E35]"
+                    title="Tout sélectionner / désélectionner"
+                  />
+                </th>
                 <th className="p-3">Commande</th>
                 <th className="p-3">Client & Téléphone</th>
                 <th className="p-3">Ville & Adresse</th>
@@ -300,7 +446,7 @@ export default function SimpleCodDashboard() {
             <tbody className="divide-y divide-[#F2ECE3]">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-400">
+                  <td colSpan={8} className="p-8 text-center text-slate-400">
                     Aucune commande trouvée.
                   </td>
                 </tr>
@@ -316,9 +462,26 @@ export default function SimpleCodDashboard() {
                   const totalAmount = order.total || (order as any).price || 0;
                   const waMessage = `Bonjour ${custName}, nous confirmons votre commande ALTAJ LEATHER N° ${orderNum} d'un montant de ${totalAmount} DH à livrer à ${custCity}. Est-ce que votre adresse est bien confirmée ? Merci !`;
                   const waLink = waNumber ? `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}` : null;
+                  const isSelected = selectedOrderIds.includes(order.id);
 
                   return (
-                    <tr key={order.id || Math.random()} className="hover:bg-[#FCFAF7] transition-colors">
+                    <tr
+                      key={order.id || Math.random()}
+                      className={`transition-colors ${
+                        isSelected ? "bg-amber-50/70 hover:bg-amber-50" : "hover:bg-[#FCFAF7]"
+                      }`}
+                    >
+                      {/* Checkbox */}
+                      <td className="p-3 w-10 text-center">
+                        <input
+                          type="checkbox"
+                          aria-label={`Sélectionner commande ${orderNum}`}
+                          checked={isSelected}
+                          onChange={() => handleToggleSelect(order.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-[#8C5E35] focus:ring-[#8C5E35] cursor-pointer accent-[#8C5E35]"
+                        />
+                      </td>
+
                       {/* Order No & Date */}
                       <td className="p-3 font-mono font-bold text-slate-800">
                         <div>#{orderNum}</div>

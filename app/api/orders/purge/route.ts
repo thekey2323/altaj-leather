@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { purgeOrders, getOrders } from "@/lib/db/store";
 import { getWhatsAppConversations, saveWhatsAppConversations } from "@/lib/whatsapp/store";
+import { supabase } from "@/lib/supabaseClient";
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,6 +11,18 @@ export async function POST(req: NextRequest) {
     const all = Boolean(body.all);
 
     const result = purgeOrders({ keepDays, onlySamples, all });
+
+    // Sync deletion to Supabase
+    try {
+      if (all) {
+        await supabase.from("orders").delete().gte("created_at", "1970-01-01T00:00:00Z");
+      } else if (keepDays && keepDays > 0) {
+        const cutoffDate = new Date(Date.now() - keepDays * 24 * 60 * 60 * 1000).toISOString();
+        await supabase.from("orders").delete().lt("created_at", cutoffDate);
+      }
+    } catch (e) {
+      console.warn("Supabase purge error:", e);
+    }
 
     // Also unconfirm purged orders in WhatsApp conversations so they are not re-injected
     const remainingOrders = getOrders();

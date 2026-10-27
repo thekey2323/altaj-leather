@@ -7,6 +7,7 @@ import {
   updateOrderStatus,
   updateOrder,
   deleteOrder,
+  deleteOrders,
   createOrder,
   getProducts,
   getEstimatedCourierCostForCity,
@@ -48,6 +49,50 @@ export default function AdminOrdersPage() {
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
   const [deletingOrder, setDeletingOrder] = useState<Order | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [isDeletingBulk, setIsDeletingBulk] = useState(false);
+
+  const handleSelectAll = () => {
+    const currentFilteredIds = filteredOrders.map((o) => o.id);
+    const areAllSelected =
+      currentFilteredIds.length > 0 &&
+      currentFilteredIds.every((id) => selectedOrderIds.includes(id));
+
+    if (areAllSelected) {
+      setSelectedOrderIds((prev) => prev.filter((id) => !currentFilteredIds.includes(id)));
+    } else {
+      setSelectedOrderIds((prev) => Array.from(new Set([...prev, ...currentFilteredIds])));
+    }
+  };
+
+  const handleToggleSelect = (orderId: string) => {
+    setSelectedOrderIds((prev) =>
+      prev.includes(orderId) ? prev.filter((id) => id !== orderId) : [...prev, orderId]
+    );
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedOrderIds.length === 0) return;
+    const count = selectedOrderIds.length;
+    if (!confirm(`Supprimer définitivement ces ${count} commandes sélectionnées ?`)) return;
+
+    setIsDeletingBulk(true);
+    const idsToDelete = [...selectedOrderIds];
+    setOrders((prev) => prev.filter((o) => !idsToDelete.includes(o.id) && !idsToDelete.includes(o.orderNumber)));
+    setSelectedOrderIds([]);
+
+    deleteOrders(idsToDelete);
+
+    try {
+      await fetch(`/api/orders?ids=${encodeURIComponent(idsToDelete.join(","))}`, {
+        method: "DELETE",
+      });
+    } catch {} finally {
+      setIsDeletingBulk(false);
+    }
+
+    showToast(`${count} commandes supprimées avec succès.`);
+  };
 
   // Purge Modal State
   const [isPurgeModalOpen, setIsPurgeModalOpen] = useState(false);
@@ -408,12 +453,54 @@ export default function AdminOrdersPage() {
         </select>
       </div>
 
+      {/* Bulk Action Bar when items selected */}
+      {selectedOrderIds.length > 0 && (
+        <div className="bg-amber-50 border border-amber-300 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-amber-950">
+              {selectedOrderIds.length} commande(s) sélectionnée(s) sur {filteredOrders.length}
+            </span>
+            <button
+              type="button"
+              onClick={() => setSelectedOrderIds([])}
+              className="text-xs text-amber-800 underline hover:text-amber-950 font-semibold cursor-pointer ml-1"
+            >
+              Tout désélectionner
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleDeleteSelected}
+              disabled={isDeletingBulk}
+              className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer disabled:opacity-50"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Supprimer la sélection ({selectedOrderIds.length})</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Orders Table */}
       <div className="bg-white rounded-3xl border border-[#EBE6DE] shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-[#FAF8F5] border-b border-altaj-border text-[10px] uppercase font-bold text-altaj-dark">
               <tr>
+                <th className="p-3.5 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    aria-label="Sélectionner toutes les commandes"
+                    checked={
+                      filteredOrders.length > 0 &&
+                      filteredOrders.every((o) => selectedOrderIds.includes(o.id))
+                    }
+                    onChange={handleSelectAll}
+                    className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-700 cursor-pointer accent-amber-700"
+                    title="Tout sélectionner / désélectionner"
+                  />
+                </th>
                 <th className="p-3.5">N° / Date</th>
                 <th className="p-3.5">Client</th>
                 <th className="p-3.5">Ville & Adresse</th>
@@ -427,7 +514,7 @@ export default function AdminOrdersPage() {
             <tbody className="divide-y divide-altaj-border/60">
               {filteredOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-altaj-muted">
+                  <td colSpan={9} className="p-8 text-center text-altaj-muted">
                     Aucune commande ne correspond à vos critères.
                   </td>
                 </tr>
@@ -438,9 +525,24 @@ export default function AdminOrdersPage() {
                   const whatsappUrl = cleanPhone
                     ? `https://wa.me/212${cleanPhone}?text=Bonjour%20${encodeURIComponent(order.customerName || "Client")},%20je%20suis%20le%20responsable%20ALTAJLEATHER%20au%20sujet%20de%20votre%20commande%20${order.orderNumber}`
                     : "#";
+                  const isSelected = selectedOrderIds.includes(order.id);
 
                   return (
-                    <tr key={order.id} className="hover:bg-slate-50/80 transition-colors">
+                    <tr
+                      key={order.id}
+                      className={`transition-colors ${
+                        isSelected ? "bg-amber-50/70 hover:bg-amber-50" : "hover:bg-slate-50/80"
+                      }`}
+                    >
+                      <td className="p-3.5 w-10 text-center">
+                        <input
+                          type="checkbox"
+                          aria-label={`Sélectionner commande ${order.orderNumber}`}
+                          checked={isSelected}
+                          onChange={() => handleToggleSelect(order.id)}
+                          className="w-4 h-4 rounded border-gray-300 text-amber-700 focus:ring-amber-700 cursor-pointer accent-amber-700"
+                        />
+                      </td>
                       <td className="p-3.5">
                         <Link
                           href={`/admin/orders/${order.id}`}

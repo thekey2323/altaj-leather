@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getProducts, saveProduct, duplicateProduct, deleteProduct } from "@/lib/db/store";
+import { getProducts, saveProduct, duplicateProduct, deleteProduct, saveServerProducts } from "@/lib/db/store";
 import { Product, ProductStatus, ProductImage } from "@/types";
 import { formatMAD, compressImageFile } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +24,7 @@ import {
   Sparkles,
   Link as LinkIcon,
   Loader2,
+  RefreshCw,
 } from "lucide-react";
 
 // Catalog photo presets available in public/images/products/
@@ -78,8 +79,31 @@ export default function AdminProductsPage() {
     setTimeout(() => setToastMessage(null), 3500);
   };
 
-  const loadProducts = () => {
-    setProducts(getProducts());
+  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
+
+  const loadProducts = async () => {
+    // 1. Initial display from cache
+    const local = getProducts();
+    if (local && local.length > 0) {
+      setProducts(local);
+    }
+
+    // 2. Fetch latest synced products from Supabase / server
+    setIsLoadingProducts(true);
+    try {
+      const res = await fetch("/api/products");
+      if (res.ok) {
+        const serverProds = await res.json();
+        if (Array.isArray(serverProds) && serverProds.length > 0) {
+          setProducts(serverProds);
+          saveServerProducts(serverProds);
+        }
+      }
+    } catch (e) {
+      console.warn("Could not fetch remote products:", e);
+    } finally {
+      setIsLoadingProducts(false);
+    }
   };
 
   useEffect(() => {
@@ -447,10 +471,23 @@ export default function AdminProductsPage() {
           </p>
         </div>
 
-        <Button variant="gold" size="md" className="flex items-center gap-2 shadow-sm" onClick={handleOpenAdd}>
-          <Plus className="h-4 w-4" />
-          <span>Ajouter un produit</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={loadProducts}
+            disabled={isLoadingProducts}
+            className="p-2 sm:px-3 sm:py-2 rounded-lg bg-white border border-[#DECDBB] text-slate-700 hover:bg-[#FAF4EC] text-xs font-bold flex items-center gap-1.5 transition-colors shadow-2xs cursor-pointer disabled:opacity-50"
+            title="Synchroniser avec la base de données Supabase"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoadingProducts ? "animate-spin" : ""}`} />
+            <span className="hidden sm:inline">Actualiser</span>
+          </button>
+
+          <Button variant="gold" size="md" className="flex items-center gap-2 shadow-sm" onClick={handleOpenAdd}>
+            <Plus className="h-4 w-4" />
+            <span>Ajouter un produit</span>
+          </Button>
+        </div>
       </div>
 
       {/* Search Bar */}

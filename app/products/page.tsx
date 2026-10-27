@@ -20,12 +20,23 @@ export default function ProductsCatalogPage() {
   const [catalogProducts, setCatalogProducts] = useState<LuxuryProduct[]>(getAllProducts);
 
   useEffect(() => {
-    try {
-      const stored = getProducts();
-      if (Array.isArray(stored) && stored.length > 0) {
-        setCatalogProducts(stored.map(adaptStoreProductToLuxury));
-      }
-    } catch {}
+    const syncCatalog = async () => {
+      try {
+        const stored = getProducts();
+        if (Array.isArray(stored) && stored.length > 0) {
+          setCatalogProducts(stored.map(adaptStoreProductToLuxury));
+        }
+
+        const res = await fetch("/api/products");
+        if (res.ok) {
+          const apiProds = await res.json();
+          if (Array.isArray(apiProds) && apiProds.length > 0) {
+            setCatalogProducts(apiProds.map(adaptStoreProductToLuxury));
+          }
+        }
+      } catch {}
+    };
+    syncCatalog();
   }, []);
 
   const categories = lang === 'ar'
