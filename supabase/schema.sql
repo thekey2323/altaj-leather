@@ -1,189 +1,206 @@
--- ==========================================================
--- ALTAJLEATHER SUPABASE POSTGRESQL PRODUCTION SCHEMA
--- Brand: ALTAJLEATHER (Moroccan Handmade Leather Goods)
--- ==========================================================
+-- ==============================================================================
+-- ALTAJ LEATHER — SUPABASE DATABASE SCHEMA & INITIAL SEED
+-- ==============================================================================
 
--- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
--- 1. CATEGORIES TABLE
-CREATE TABLE IF NOT EXISTS categories (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(100) NOT NULL,
-    slug VARCHAR(100) NOT NULL UNIQUE,
-    description TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+-- 1. PRODUCTS TABLE
+CREATE TABLE IF NOT EXISTS public.products (
+  id TEXT PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  name TEXT NOT NULL,
+  sku TEXT,
+  tagline TEXT,
+  description TEXT,
+  price NUMERIC NOT NULL DEFAULT 119,
+  compare_at_price NUMERIC DEFAULT 169,
+  cost NUMERIC DEFAULT 50,
+  promotion_badge TEXT DEFAULT '👑 PLUS DEMANDÉ',
+  featured_image TEXT NOT NULL,
+  images JSONB DEFAULT '[]'::jsonb,
+  stock INTEGER DEFAULT 20,
+  low_stock_threshold INTEGER DEFAULT 5,
+  category TEXT DEFAULT 'Portefeuilles',
+  tags JSONB DEFAULT '["100% Cuir Naturel"]'::jsonb,
+  status TEXT DEFAULT 'ACTIVE',
+  materials JSONB DEFAULT '["100% Cuir Naturel Tannage Végétal", "Fil ciré haute résistance"]'::jsonb,
+  dimensions TEXT DEFAULT '10.8 cm x 8.4 cm',
+  handmade_in TEXT DEFAULT 'Atelier ALTAJ — Maroc',
+  bundle_offers JSONB DEFAULT '[]'::jsonb,
+  related_product_slugs JSONB DEFAULT '[]'::jsonb,
+  rating NUMERIC DEFAULT 5.0,
+  review_count INTEGER DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. PRODUCTS TABLE
-CREATE TABLE IF NOT EXISTS products (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
-    slug VARCHAR(150) NOT NULL UNIQUE,
-    name VARCHAR(200) NOT NULL,
-    sku VARCHAR(100) NOT NULL UNIQUE,
-    tagline VARCHAR(255),
-    description TEXT NOT NULL,
-    price NUMERIC(10, 2) NOT NULL,
-    compare_at_price NUMERIC(10, 2),
-    cost NUMERIC(10, 2) DEFAULT 0,
-    promotion_badge VARCHAR(50),
-    stock INTEGER NOT NULL DEFAULT 0,
-    low_stock_threshold INTEGER DEFAULT 5,
-    status VARCHAR(50) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'DRAFT', 'OUT OF STOCK', 'ARCHIVED')),
-    materials TEXT[] DEFAULT ARRAY['Cuir de vachette véritable', 'Fil ciré haute résistance'],
-    dimensions VARCHAR(100) DEFAULT '11 cm x 8.5 cm x 1.2 cm',
-    handmade_in VARCHAR(100) DEFAULT 'Maroc',
-    seo_title VARCHAR(255),
-    seo_description TEXT,
-    rating NUMERIC(3, 2) DEFAULT 4.9,
-    review_count INTEGER DEFAULT 18,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+-- 2. ORDERS TABLE (Cash On Delivery Morocco Engine)
+CREATE TABLE IF NOT EXISTS public.orders (
+  id TEXT PRIMARY KEY,
+  order_number TEXT UNIQUE NOT NULL,
+  customer_name TEXT NOT NULL,
+  customer_phone TEXT NOT NULL,
+  customer_address TEXT NOT NULL,
+  customer_city TEXT NOT NULL,
+  courier_cost NUMERIC DEFAULT 35,
+  notes TEXT DEFAULT '',
+  items JSONB DEFAULT '[]'::jsonb,
+  subtotal NUMERIC NOT NULL DEFAULT 0,
+  discount NUMERIC DEFAULT 0,
+  shipping_fee NUMERIC DEFAULT 0,
+  total NUMERIC NOT NULL DEFAULT 0,
+  status TEXT DEFAULT 'NEW',
+  payment_method TEXT DEFAULT 'COD',
+  utm_source TEXT DEFAULT 'Direct',
+  utm_campaign TEXT DEFAULT 'Organic',
+  internal_notes JSONB DEFAULT '[]'::jsonb,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. PRODUCT IMAGES TABLE
-CREATE TABLE IF NOT EXISTS product_images (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    url TEXT NOT NULL,
-    alt VARCHAR(255),
-    is_featured BOOLEAN DEFAULT FALSE,
-    display_order INTEGER DEFAULT 0,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+-- 3. REVIEWS TABLE (With WhatsApp Voice Note Support)
+CREATE TABLE IF NOT EXISTS public.reviews (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  city TEXT NOT NULL,
+  rating INTEGER DEFAULT 5,
+  comment TEXT NOT NULL,
+  date TEXT DEFAULT 'Aujourd''hui',
+  is_verified BOOLEAN DEFAULT true,
+  audio_url TEXT,
+  audio_duration TEXT DEFAULT '0:15',
+  product_slug TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. BUNDLE OFFERS TABLE
-CREATE TABLE IF NOT EXISTS offers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    name VARCHAR(150) NOT NULL,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    price NUMERIC(10, 2) NOT NULL,
-    badge VARCHAR(100),
-    savings NUMERIC(10, 2) DEFAULT 0,
-    is_popular BOOLEAN DEFAULT FALSE,
-    is_active BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- ENABLE ROW LEVEL SECURITY (RLS)
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reviews ENABLE ROW LEVEL SECURITY;
 
--- 5. CUSTOMERS TABLE
-CREATE TABLE IF NOT EXISTS customers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(200) NOT NULL,
-    phone VARCHAR(50) NOT NULL UNIQUE,
-    city VARCHAR(100) NOT NULL,
-    address TEXT NOT NULL,
-    total_orders INTEGER DEFAULT 0,
-    delivered_orders INTEGER DEFAULT 0,
-    cancelled_orders INTEGER DEFAULT 0,
-    total_spent NUMERIC(10, 2) DEFAULT 0,
-    reliability_score INTEGER DEFAULT 100 CHECK (reliability_score BETWEEN 0 AND 100),
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- POLICIES: Allow public read & write access for anon key
+CREATE POLICY "Public Read Access Products" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Public Insert/Update Products" ON public.products FOR ALL USING (true) WITH CHECK (true);
 
--- 6. ORDERS TABLE (Tailored for Moroccan Cash On Delivery)
-CREATE TABLE IF NOT EXISTS orders (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_number VARCHAR(50) NOT NULL UNIQUE,
-    customer_id UUID REFERENCES customers(id) ON DELETE SET NULL,
-    customer_name VARCHAR(200) NOT NULL,
-    customer_phone VARCHAR(50) NOT NULL,
-    customer_address TEXT NOT NULL,
-    customer_city VARCHAR(100) NOT NULL,
-    customer_notes TEXT,
-    subtotal NUMERIC(10, 2) NOT NULL,
-    discount NUMERIC(10, 2) DEFAULT 0,
-    shipping_fee NUMERIC(10, 2) DEFAULT 0,
-    total NUMERIC(10, 2) NOT NULL,
-    status VARCHAR(50) DEFAULT 'NEW' CHECK (
-        status IN (
-            'NEW',
-            'PENDING_CONFIRMATION',
-            'CONFIRMED',
-            'PREPARING',
-            'SHIPPED',
-            'DELIVERED',
-            'CANCELLED',
-            'RETURNED'
-        )
-    ),
-    payment_method VARCHAR(50) DEFAULT 'COD',
-    utm_source VARCHAR(100),
-    utm_campaign VARCHAR(150),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+CREATE POLICY "Public Read Access Orders" ON public.orders FOR SELECT USING (true);
+CREATE POLICY "Public Insert/Update Orders" ON public.orders FOR ALL USING (true) WITH CHECK (true);
 
--- 7. ORDER ITEMS TABLE
-CREATE TABLE IF NOT EXISTS order_items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    product_id UUID REFERENCES products(id) ON DELETE SET NULL,
-    product_name VARCHAR(200) NOT NULL,
-    product_image TEXT,
-    quantity INTEGER NOT NULL DEFAULT 1,
-    unit_price NUMERIC(10, 2) NOT NULL,
-    total_price NUMERIC(10, 2) NOT NULL,
-    bundle_name VARCHAR(150),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+CREATE POLICY "Public Read Access Reviews" ON public.reviews FOR SELECT USING (true);
+CREATE POLICY "Public Insert/Update Reviews" ON public.reviews FOR ALL USING (true) WITH CHECK (true);
 
--- 8. ORDER NOTES & TIMELINE AUDIT
-CREATE TABLE IF NOT EXISTS order_notes (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
-    author VARCHAR(100) NOT NULL,
-    text TEXT NOT NULL,
-    type VARCHAR(50) DEFAULT 'INTERNAL_NOTE' CHECK (type IN ('STATUS_CHANGE', 'CUSTOMER_CONTACT', 'INTERNAL_NOTE')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- 4. STORAGE BUCKET FOR PRODUCT PHOTOS & WHATSAPP AUDIO
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('altaj-media', 'altaj-media', true)
+ON CONFLICT (id) DO NOTHING;
 
--- 9. INVENTORY TRANSACTIONS & AUDIT LOG
-CREATE TABLE IF NOT EXISTS inventory_transactions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
-    action VARCHAR(50) NOT NULL CHECK (action IN ('ADD', 'REMOVE', 'ADJUST', 'ORDER_FULFILL', 'RETURN')),
-    quantity_change INTEGER NOT NULL,
-    new_stock INTEGER NOT NULL,
-    reason TEXT NOT NULL,
-    performed_by VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+CREATE POLICY "Public Media Access" ON storage.objects
+FOR SELECT USING (bucket_id = 'altaj-media');
 
--- 10. REVIEWS TABLE
-CREATE TABLE IF NOT EXISTS reviews (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    product_id UUID REFERENCES products(id) ON DELETE CASCADE,
-    author_name VARCHAR(100) NOT NULL,
-    city VARCHAR(100),
-    rating INTEGER CHECK (rating BETWEEN 1 AND 5),
-    comment TEXT NOT NULL,
-    is_verified_buyer BOOLEAN DEFAULT TRUE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+CREATE POLICY "Public Media Upload" ON storage.objects
+FOR INSERT WITH CHECK (bucket_id = 'altaj-media');
 
--- 11. WEBSITE CONTENT & SETTINGS
-CREATE TABLE IF NOT EXISTS settings (
-    key VARCHAR(100) PRIMARY KEY,
-    value JSONB NOT NULL,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+CREATE POLICY "Public Media Update/Delete" ON storage.objects
+FOR ALL USING (bucket_id = 'altaj-media');
 
--- 12. ADMIN USERS TABLE
-CREATE TABLE IF NOT EXISTS admin_users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    email VARCHAR(200) NOT NULL UNIQUE,
-    full_name VARCHAR(200) NOT NULL,
-    role VARCHAR(50) DEFAULT 'STAFF' CHECK (role IN ('OWNER', 'ADMIN', 'STAFF')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
-);
+-- 5. INITIAL SEED FOR PRODUCTS
+INSERT INTO public.products (
+  id, slug, name, sku, price, compare_at_price, cost, promotion_badge,
+  featured_image, images, stock, category, dimensions, handmade_in, rating
+) VALUES
+(
+  'prod-1793122106095',
+  'passeport-holder',
+  'Passeport Holder',
+  'ALTAJ-229',
+  119,
+  169,
+  50,
+  'PROMO',
+  '/images/products/passport-cover.jpg',
+  '[{"id":"img-1","url":"/images/products/passport-cover.jpg","isFeatured":true,"order":1},{"id":"img-2","url":"/images/products/cognac-minimalist.jpg","isFeatured":false,"order":2}]'::jsonb,
+  20,
+  'Portefeuilles',
+  '10.8 cm x 8.4 cm',
+  'Atelier ALTAJ — Maroc',
+  5.0
+),
+(
+  'prod-1',
+  'altaj-classic-marron',
+  'ALTAJ CLASSIC — MARRON',
+  'ALTAJ-CLS-BRN',
+  119,
+  169,
+  50,
+  'PROMO',
+  '/images/products/altaj-classic-marron-custom-1.jpg',
+  '[{"id":"img-1","url":"/images/products/altaj-classic-marron-custom-1.jpg","isFeatured":true,"order":1},{"id":"img-2","url":"/images/products/altaj-classic-marron-custom-2.jpg","isFeatured":false,"order":2},{"id":"img-3","url":"/images/products/altaj-classic-marron-custom-3.jpg","isFeatured":false,"order":3}]'::jsonb,
+  25,
+  'Portefeuilles',
+  '10.8 cm x 8.4 cm',
+  'Atelier ALTAJ — Maroc',
+  5.0
+),
+(
+  'prod-black-snap',
+  'altaj-noir',
+  'ALTAJ NOIR',
+  'ALTAJ-NOIR-01',
+  119,
+  169,
+  50,
+  'NOUVEAU',
+  '/images/products/altaj-noir-front.jpg',
+  '[{"id":"img-1","url":"/images/products/altaj-noir-front.jpg","isFeatured":true,"order":1},{"id":"img-2","url":"/images/products/altaj-noir-open.jpg","isFeatured":false,"order":2}]'::jsonb,
+  18,
+  'Portefeuilles',
+  '10.8 cm x 8.4 cm',
+  'Atelier ALTAJ — Maroc',
+  5.0
+)
+ON CONFLICT (id) DO UPDATE SET
+  featured_image = EXCLUDED.featured_image,
+  images = EXCLUDED.images;
 
--- INDEXES FOR MAXIMUM COD PERFORMANCE
-CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
-CREATE INDEX IF NOT EXISTS idx_orders_phone ON orders(customer_phone);
-CREATE INDEX IF NOT EXISTS idx_orders_city ON orders(customer_city);
-CREATE INDEX IF NOT EXISTS idx_products_slug ON products(slug);
-CREATE INDEX IF NOT EXISTS idx_customers_phone ON customers(phone);
+-- 6. INITIAL SEED FOR REVIEWS
+INSERT INTO public.reviews (
+  id, name, city, rating, comment, date, is_verified, product_slug
+) VALUES
+(
+  'rev-1',
+  'Soufiane Bennani',
+  'Casablanca',
+  5,
+  'تبارك الله، جودة الجلد الطبيعي ممتازة وخياطة متقونة بزاف. فحصت السلعة قبل ما نخلص الموزع والجلد رائحته نقية.',
+  'Il y a 2 jours',
+  true,
+  'altaj-classic-marron'
+),
+(
+  'rev-2',
+  'Omar Tazi',
+  'Rabat',
+  5,
+  'شريت عرض قطعتين بـ 189 درهم، تغليف كرافت أنيق وتوصيل سريع في 24 ساعة. تعامل راقي جداً.',
+  'Il y a 4 jours',
+  true,
+  'all'
+),
+(
+  'rev-3',
+  'Yassine El Moden',
+  'Tanger',
+  5,
+  'غلاف جواز السفر فخم وعملي في السفر. ملمس الجلد الطبيعي فاخر وسميك، شكراً دار التاج.',
+  'Il y a 1 semaine',
+  true,
+  'passeport-holder'
+),
+(
+  'rev-4',
+  'Mehdi Skalli',
+  'Marrakech',
+  5,
+  'أول تجربة ممتازة، جودة الجلد الطبيعي عالية والسعر مناسب جداً مقارنة بالإتقان والتغليف الممتاز.',
+  'Il y a 2 semaines',
+  true,
+  'all'
+)
+ON CONFLICT (id) DO NOTHING;
