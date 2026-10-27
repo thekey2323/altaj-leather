@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #FCFCFA;
+  --card-bg: #FFFFFF;
+  --text-primary: #202124;
+  --text-secondary: #777777;
+  --accent-coral: #E05A47;
+  --font-arabic: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-arabic);
+  overflow-x: hidden;
+  max-width: 100vw;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobile input zoom prevention on iOS */
+@media screen and (max-width: 768px) {
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* RTL layout helpers */
+[dir="rtl"] {
+  font-family: 'IBM Plex Sans Arabic', 'Tajawal', sans-serif;
+  text-align: right;
+}
+
+[dir="ltr"] {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  text-align: left;
+}
+
+/* Custom soft scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #E8DCce;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D9CCC0;
+}
+
+/* Animations & smooth interactions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.92; transform: scale(1.02); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 3s ease-in-out infinite;
+}
+
+/* Hide scrollbar for clean carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+

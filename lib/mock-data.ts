@@ -1,0 +1,301 @@
+import {
+  WardrobeItem,
+  Outfit,
+  StyleIdentity,
+  StyleChallenge,
+  InspirationLook,
+  ShoppingRecommendation,
+  UserProfile,
+} from '@/types/heiba';
+
+export const INITIAL_WARDROBE: WardrobeItem[] = [];
+
+export const SAMPLE_STYLE_IDENTITIES: Record<string, StyleIdentity> = {
+  quiet_luxury: {
+    code: 'quiet_luxury',
+    name: 'Modern Quiet Luxury',
+    nameAr: 'الفخامة الهادئة العصرية',
+    tagline: 'Understated Elegance & Impeccable Quality',
+    taglineAr: 'حضور راقي بدون شعارات فاقعة، جودة تتحدث عن نفسها',
+    description:
+      'You appreciate elevated craftsmanship, natural fabrics (linen, silk, fine merino wool), and muted earth tones. Your style prioritizes fit and fabric drape rather than loud branding.',
+    descriptionAr:
+      'أنت تفضل الخامات الطبيعية الراقية كالكتان والقطن الفاخر، والألوان المحايدة الهادئة. ستايلك يعتمد على القصة المضبوطة وتناسق الدرجات بدون الحاجة لشعارات كبيرة أو ألوان صاخبة.',
+    bestColors: [
+      { name: 'Warm Beige', nameAr: 'بيج دافئ', hex: '#E8DCce' },
+      { name: 'Deep Navy', nameAr: 'كحلي داكن', hex: '#1B263B' },
+      { name: 'Crisp Off-White', nameAr: 'أوف وايت ناصع', hex: '#FAF0E6' },
+      { name: 'Sage / Olive', nameAr: 'زيتي هادئ', hex: '#556B2F' },
+      { name: 'Espresso Brown', nameAr: 'بني شوكولاتة', hex: '#3E2723' },
+    ],
+    recommendedFits: ['regular', 'relaxed'],
+    recommendedFitsAr: ['قصة منتظمة كلاسيكية (Regular Fit)', 'قصة مريحة بدون تضييق مبالغ فيه (Relaxed Fit)'],
+    wardrobeEssentials: [
+      'Unstructured Linen Blazer',
+      'Pleated Tailored Trousers',
+      'Suede Loafers without socks',
+      'Heavyweight 250gsm Knit Tees',
+      'Minimalist Leather Strap Watch',
+    ],
+    wardrobeEssentialsAr: [
+      'بليزر كتان غير مبطن خفيف',
+      'سروال قماشي بكسرات خفيفة (Pleated)',
+      'حذاء لوفر سويد راقي',
+      'تيشيرتات محبوكة قطن ثقيل',
+      'ساعة يد بحزام جلدي ناعم وبدون بهرجة',
+    ],
+    thingsToAvoid: [
+      'Loud brand logos & slogans',
+      'Ultra skinny jeans',
+      'Neon colors',
+      'Synthetic shiny fabrics',
+    ],
+    thingsToAvoidAr: [
+      'الملابس ذات الشعارات الكبيرة والبارزة',
+      'الجينز الضيق جداً (Skinny Jeans)',
+      'الألوان النيون الفاقعة',
+      'الأقمشة البوليستر اللامعة',
+    ],
+    sampleOutfits: [],
+  },
+};
+
+export const INITIAL_USER_PROFILE: UserProfile = {
+  id: 'usr_heiba_new',
+  name: '',
+  email: '',
+  avatarUrl: '',
+  language: 'ar',
+  currency: 'SAR',
+  isPro: false,
+  aiQueriesUsedToday: 0,
+  aiQueriesLimit: 5,
+  onboardingCompleted: false,
+};
+
+export const SAMPLE_OUTFITS: Outfit[] = [];
+
+export const WEEKLY_CHALLENGES: StyleChallenge[] = [
+  {
+    id: 'chal_1',
+    title: '7 Days of Effortless Smart Casual',
+    titleAr: 'تحدي 7 أيام من السمارت كاجوال الراقي',
+    description:
+      'Elevate your daily routine with 7 distinct coordinated looks using only your existing core wardrobe.',
+    descriptionAr:
+      'ارتقِ بمظهرك اليومي لمدة أسبوع كامل من خلال 7 إطلالات منسقة ومختلفة بالاعتماد على خزانة ملابسك الحالية.',
+    difficulty: 'medium',
+    daysCount: 7,
+    currentDay: 1,
+    badgeName: 'Smart Casual Master',
+    badgeNameAr: 'ماستر السمارت كاجوال',
+    badgeIcon: 'Award',
+    dailyTasks: [
+      {
+        day: 1,
+        task: 'Style your crisp white sneakers with tailored trousers instead of joggers.',
+        taskAr: 'نسق السنيكرز الأبيض مع سروال قماشي بدل البنطال الرياضي.',
+        completed: false,
+      },
+      {
+        day: 2,
+        task: 'Build a monochrome or 2-tone minimalist neutral outfit (Beige & White).',
+        taskAr: 'اصنع إطلالة هادئة بلونين محايدين فقط (بيج وأبيض).',
+        completed: false,
+      },
+      {
+        day: 3,
+        task: 'Layer a clean jacket or overshirt over a tucked-in crewneck tee.',
+        taskAr: 'ارتدِ جاكيت أو أوفرشيرت خفيف فوق تيشيرت سادة مع إدخاله في الحزام.',
+        completed: false,
+      },
+      {
+        day: 4,
+        task: 'Wear dress loafers without visible socks and roll your trouser hems.',
+        taskAr: 'ارتدِ حذاء اللوفر بدون جوارب ظاهرة مع ضبط حاشية السروال.',
+        completed: false,
+      },
+      {
+        day: 5,
+        task: 'Style an elevated Friday prayer look blending heritage and modern flair.',
+        taskAr: 'نسق إطلالة جمعة محترمة تجمع بين الوقار والأناقة العصرية.',
+        completed: false,
+      },
+      {
+        day: 6,
+        task: 'Date night or friends gathering: wear a blazer with an understated tee.',
+        taskAr: 'سهرة أو موعد: ارتدِ البليزر مع تيشيرت قطن فاخر بدل القميص.',
+        completed: false,
+      },
+      {
+        day: 7,
+        task: 'Restyle your favorite shirt in a way you have never worn before.',
+        taskAr: 'أعد ارتداء قميصك المفضل بطريقة تنسيق جديدة كلياً.',
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: 'chal_2',
+    title: 'Style 1 Garment 3 Distinct Ways',
+    titleAr: 'تحدي: قطعة واحدة بـ 3 إطلالات مختلفة',
+    description: 'Master versatility by taking your white sneakers or linen shirt across 3 completely different settings.',
+    descriptionAr: 'تعلم فن المرونة في الملابس: ارتدِ نفس القميص في العمل، موعد كاجوال، وسهرة أصدقاء.',
+    difficulty: 'easy',
+    daysCount: 3,
+    currentDay: 1,
+    badgeName: 'Versatility Virtuoso',
+    badgeNameAr: 'خبير التنسيق المتعدد',
+    badgeIcon: 'Sparkles',
+    dailyTasks: [
+      {
+        day: 1,
+        task: 'Outfit A: Casual morning coffee run.',
+        taskAr: 'اللوك الأول: كاجوال صباحي للقهوة والراحة.',
+        completed: false,
+      },
+      {
+        day: 2,
+        task: 'Outfit B: Structured office / client meeting.',
+        taskAr: 'اللوك الثاني: عمل أو اجتماع مع إضافة قطعة رسمية.',
+        completed: false,
+      },
+      {
+        day: 3,
+        task: 'Outfit C: Relaxed evening dinner with friends.',
+        taskAr: 'اللوك الثالث: عشاء مسائي هادئ بملحقات مسائية.',
+        completed: false,
+      },
+    ],
+  },
+];
+
+export const INSPIRATION_FEED: InspirationLook[] = [
+  {
+    id: 'insp_1',
+    title: 'Riviera Mediterranean Linen',
+    titleAr: 'أناقة الكتان المتوسطي الهادئ',
+    category: 'quiet_luxury',
+    imageUrl: 'https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=700&q=80',
+    occasion: 'summer',
+    colorPalette: [
+      { name: 'Sand', hex: '#D2B48C' },
+      { name: 'Off-White', hex: '#FAF0E6' },
+      { name: 'Sky Blue', hex: '#A0C4E2' },
+    ],
+    pieces: ['Linen Camp Collar Shirt', 'Drawstring Tailored Trousers', 'Woven Leather Mules'],
+    piecesAr: ['قميص كتان بياقة مفتوحة', 'سروال قماشي برباط خفي', 'حذاء جلدي منسوج'],
+    saved: false,
+  },
+  {
+    id: 'insp_2',
+    title: 'Monochrome Midnight Minimalist',
+    titleAr: 'المونوكروم الليلي البسيط',
+    category: 'minimalist',
+    imageUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=700&q=80',
+    occasion: 'night_out',
+    colorPalette: [
+      { name: 'Pitch Black', hex: '#121212' },
+      { name: 'Charcoal', hex: '#333333' },
+      { name: 'Silver Accent', hex: '#C0C0C0' },
+    ],
+    pieces: ['Black Fine Merino Knit', 'Straight Leg Charcoal Wool Pants', 'Chunky Sole Derbies'],
+    piecesAr: ['كنزة ميرينو سوداء خفيفة', 'سروال صوف فحمى قصة مستقيمة', 'حذاء ديربي بنعل بارز'],
+    saved: false,
+  },
+  {
+    id: 'insp_3',
+    title: 'Contemporary Old Money Tailoring',
+    titleAr: 'كلاسيك أرستقراطي معاصر',
+    category: 'old_money',
+    imageUrl: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?auto=format&fit=crop&w=700&q=80',
+    occasion: 'smart_casual',
+    colorPalette: [
+      { name: 'Navy Blue', hex: '#1B263B' },
+      { name: 'Cream', hex: '#FFFDD0' },
+      { name: 'Cognac Leather', hex: '#9A463D' },
+    ],
+    pieces: ['Double Breasted Navy Blazer', 'Pleated Off-White Chinos', 'Vintage Suede Loafers'],
+    piecesAr: ['بليزر كحلي كلاسيكي بأزرار مزدوجة', 'تشينو أوف وايت بكسرات', 'لوفر سويد عتيق'],
+    saved: false,
+  },
+  {
+    id: 'insp_4',
+    title: 'Clean Minimalist Streetwear',
+    titleAr: 'ستريت وير نظيف وعصري',
+    category: 'streetwear',
+    imageUrl: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=700&q=80',
+    occasion: 'daily_casual',
+    colorPalette: [
+      { name: 'Heather Grey', hex: '#9E9E9E' },
+      { name: 'Washed Black', hex: '#2C2C2C' },
+      { name: 'Off-White', hex: '#F5F5F0' },
+    ],
+    pieces: ['Boxy Heavyweight Hooded Sweatshirt', 'Relaxed Wide-Leg Trousers', 'Retro Runner Shoes'],
+    piecesAr: ['هودي قطني ثقيل قصة بوكسي', 'سروال واسع مريح', 'حذاء جري ريترو كلاسيكي'],
+    saved: false,
+  },
+];
+
+export const SHOPPING_RECOMMENDATIONS: ShoppingRecommendation[] = [
+  {
+    id: 'shop_1',
+    title: 'Tailored Beige Pleated Chinos',
+    titleAr: 'سروال تشينو بيج بكسرات كلاسيكية',
+    category: 'chinos',
+    reason: 'Completes 14 additional outfits with your existing navy shirt and linen overshirt.',
+    reasonAr: 'يفتح لك 14 لوك إضافي جديد مع قمصانك وبليزراتك الحالية بدون شراء أي قطع أخرى.',
+    priority: 'must_have',
+    colorHex: '#E8DCce',
+    estimatedPrice: {
+      SAR: 280,
+      EGP: 2200,
+      MAD: 650,
+      USD: 75,
+    },
+    costPerWearInsight: 'Estimated wear cost: 5.6 SAR/day over 50 anticipated wears.',
+    costPerWearInsightAr: 'تكلفة الارتداء التقديرية: حوالي 5.6 ريال لكل لبسة على مدار سنة كاملة.',
+    pairsWithItemsCount: 5,
+    sampleImageUrl: 'https://images.unsplash.com/photo-1473966968600-fa801b869a1a?auto=format&fit=crop&w=500&q=80',
+  },
+  {
+    id: 'shop_2',
+    title: 'Woven Brown Leather Braided Belt',
+    titleAr: 'حزام جلد بني مضفور ومرن',
+    category: 'belts',
+    reason: 'Harmonizes your suede loafers with beige linen and blue chino combinations.',
+    reasonAr: 'يربط بين حذاء اللوفر السويد والسراويل البيج والكحلية بتناسق مثالي.',
+    priority: 'recommended',
+    colorHex: '#8B5A2B',
+    estimatedPrice: {
+      SAR: 140,
+      EGP: 1100,
+      MAD: 320,
+      USD: 38,
+    },
+    costPerWearInsight: 'Timeless accessory that lasts 4+ years of frequent daily use.',
+    costPerWearInsightAr: 'إكسسوار كلاسيكي أساسي يعيش معك لسنوات ويرفع هيبة أي لوك.',
+    pairsWithItemsCount: 7,
+    sampleImageUrl: 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=500&q=80',
+  },
+  {
+    id: 'shop_3',
+    title: 'Pure Linen Sky Blue Button-Down',
+    titleAr: 'قميص كتان أزرق سماوي ناصع',
+    category: 'shirts',
+    reason: 'Fills the blue light-tone gap in your summer collection for office and Friday outings.',
+    reasonAr: 'يسد الفراغ اللوني في قمصانك الصيفية، ممتاز لأيام العمل الدافئة والجمعات العائلية.',
+    priority: 'recommended',
+    colorHex: '#A0C4E2',
+    estimatedPrice: {
+      SAR: 290,
+      EGP: 2300,
+      MAD: 680,
+      USD: 78,
+    },
+    costPerWearInsight: 'Breathable in 35°C+ heat while maintaining an elevated silhouette.',
+    costPerWearInsightAr: 'مريح جداً في الطقس الحار ويعطيك هيبة وانتعاش طول اليوم.',
+    pairsWithItemsCount: 4,
+    sampleImageUrl: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=500&q=80',
+  },
+];

@@ -1,0 +1,453 @@
+[
+  {
+    "id": "conv-1790520456107",
+    "customerPhone": "88712566276136@lid",
+    "customerName": "Ayoub",
+    "lastMessage": "صافي أيووب، الطلبية ديالك راها تسجلات، الموزع غادي يتواصل معاك ف أقرب ...",
+    "lastMessageAt": "2026-09-29T08:40:59.034Z",
+    "unreadCount": 0,
+    "botActive": true,
+    "funnelState": "ORDER_PLACED",
+    "tags": [
+      "WhatsApp Ad / Direct",
+      "Nouveau Lead",
+      "Commande-Confirmée",
+      "Casablanca"
+    ],
+    "utmSource": "WhatsApp Ad / Direct",
+    "utmCampaign": "CAMPAIGN_WALLET_DARIJA",
+    "messages": [
+      {
+        "id": "msg-1790520456107",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Salam",
+        "timestamp": "2026-09-27T14:47:36.107Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520461731",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "Salam a khoya, wach bghiti nwarrik les modèles dyalna?",
+        "timestamp": "2026-09-27T14:47:41.730Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520469066",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Ok",
+        "timestamp": "2026-09-27T14:47:49.066Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520472337",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "مزيان، هادشي لي بغيت، تفضل هنا كاينين التصاور ديال لي موديل لي عندنا.",
+        "timestamp": "2026-09-27T14:47:52.336Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520488959",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Sayft les photos",
+        "timestamp": "2026-09-27T14:48:08.959Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520492456",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "مزيان، هادشي لي بغيت، تفضل هنا كاينين التصاور ديال لي موديل لي عندنا.",
+        "mediaType": "catalog",
+        "mediaItems": [
+          {
+            "title": "ALTAJ CLASSIC — MARRON",
+            "imageUrl": "/images/products/altaj-classic-brown-front.jpg",
+            "price": 119,
+            "description": "مارون كلاسيك أصيل"
+          },
+          {
+            "title": "ALTAJ SIGNATURE — NOIR",
+            "imageUrl": "/images/products/altaj-noir-front.jpg",
+            "price": 119,
+            "description": "أسود ملكي فاخر"
+          }
+        ],
+        "timestamp": "2026-09-27T14:48:12.455Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520503956",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Hada shahhal taman",
+        "timestamp": "2026-09-27T14:48:23.956Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520508825",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "حبة وحدة بـ 119 درهم (+25 درهم توصيل)، أو عرض جوج بـ 200 درهم والتوصيل مجاني. شنو بغيتي؟",
+        "timestamp": "2026-09-27T14:48:28.824Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520526182",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "2 livraison gratuit",
+        "timestamp": "2026-09-27T14:48:46.182Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520529623",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "مزيان، العرض ديال جوج بـ 200 درهم والتوصيل مجاني. بغيت نطلبوه ليك؟",
+        "timestamp": "2026-09-27T14:48:49.622Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520536317",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Ok",
+        "timestamp": "2026-09-27T14:48:56.317Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520539979",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "مزيان، بغيت نطلبوه ليك؟ شنو سميتك الكامل و فين ساكن؟",
+        "timestamp": "2026-09-27T14:48:59.978Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520555473",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Ayoub\nCasablanca sidi bernoussi",
+        "timestamp": "2026-09-27T14:49:15.473Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520559291",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "تبارك الله عليك أيووب، كازا سيدي معروف. شنو هو العنوان ديالك بالضبط أو الحي؟",
+        "timestamp": "2026-09-27T14:49:19.290Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520570905",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "LA sidi bernoussi",
+        "timestamp": "2026-09-27T14:49:30.905Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520576372",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "تبارك الله عليك أيووب، كازا سيدي معروف. شنو هو العنوان ديالك بالضبط أو الحي؟",
+        "timestamp": "2026-09-27T14:49:36.372Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520593660",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "LA sidi bernoussi hda café Salma",
+        "timestamp": "2026-09-27T14:49:53.660Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520597076",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "صافي أيووب، الطلبية ديالك تسجلات! الموزع غادي يتصل بك في 24-48 ساعة.",
+        "timestamp": "2026-09-27T14:49:57.075Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790520605957",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "OK Shokran",
+        "timestamp": "2026-09-27T14:50:05.957Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790520611701",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "على الرحب و السعة أيووب، بالصحة و الراحة!",
+        "timestamp": "2026-09-27T14:50:11.700Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790526039326",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "فين وصلات كومند",
+        "timestamp": "2026-09-27T16:20:39.326Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790526045039",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "أيووب، الطلبية ديالك راهي في الطريق، الموزع غادي يوصلها لك في أقرب وقت ممكن.",
+        "timestamp": "2026-09-27T16:20:45.038Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790526054157",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "شكرا",
+        "timestamp": "2026-09-27T16:20:54.157Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790526059992",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "على الرحب و السعة أيووب، الطلبية ديالك راهي مسجلة و في انتظار توصلك في 24-48 ساعة.",
+        "timestamp": "2026-09-27T16:20:59.991Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790526063542",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "ياك جلد بعدا",
+        "timestamp": "2026-09-27T16:21:03.542Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790526069246",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "آه أيووب، جلد بقر طبيعي 100% حر، وكتشوفها قبل ما تخلص.",
+        "timestamp": "2026-09-27T16:21:09.245Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790526082597",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "نقلب ونحل كوموند",
+        "timestamp": "2026-09-27T16:21:22.597Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790526088653",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "مرحبا بك، بطبيعة الحال! عندك كامل الحق تحل وتشوف السلعة ديالك قبل ما تخلص الموزع.",
+        "timestamp": "2026-09-27T16:21:28.652Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790527419425",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "اوكي",
+        "timestamp": "2026-09-27T16:43:39.425Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790527422014",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "صافي أيووب، الطلبية ديالك تسجلات، والموزع غادي يصوني ليك في 24-48 ساعة إن شاء الله.",
+        "timestamp": "2026-09-27T16:43:42.013Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790587913992",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Salam",
+        "timestamp": "2026-09-28T09:31:53.992Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790587919708",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "وعليكم السلام أيووب، مرحبا بك مرة أخرى!",
+        "timestamp": "2026-09-28T09:31:59.707Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790587937528",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Fin wsalt comande",
+        "timestamp": "2026-09-28T09:32:17.528Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790587946879",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "مرحبا بك أخي عند ALTAJ LEATHER 👑! واش بغيتي تشوف صور الموديلات ولا نوجدو ليك الطلبية ديالك؟",
+        "timestamp": "2026-09-28T09:32:26.878Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790587960333",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Deja comande",
+        "timestamp": "2026-09-28T09:32:40.333Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790587965950",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "أيووب، الطلبية ديالك تسجلات، الموزع غادي يعيط ليك ف 24-48 ساعة إن شاء الله.",
+        "timestamp": "2026-09-28T09:32:45.949Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790588003808",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Ok",
+        "timestamp": "2026-09-28T09:33:23.808Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790588006499",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "الحمد لله أيووب، الطلبية ديالك راه تسجلات، الموزع غادي يتواصل معاك ف أقرب وقت إن شاء الله.",
+        "timestamp": "2026-09-28T09:33:26.498Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790671241551",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Salam",
+        "timestamp": "2026-09-29T08:40:41.551Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790671247415",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "وعليكم السلام أيووب، لاباس عليك؟ بغيتي تشوف الموديلات ديال البزاطم؟",
+        "timestamp": "2026-09-29T08:40:47.414Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790671254989",
+        "conversationId": "conv-1790520456107",
+        "sender": "CUSTOMER",
+        "text": "Oui",
+        "timestamp": "2026-09-29T08:40:54.989Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790671259035",
+        "conversationId": "conv-1790520456107",
+        "sender": "BOT",
+        "text": "صافي أيووب، الطلبية ديالك راها تسجلات، الموزع غادي يتواصل معاك ف أقرب وقت إن شاء الله.",
+        "timestamp": "2026-09-29T08:40:59.034Z",
+        "status": "SENT"
+      }
+    ],
+    "capturedOrder": {
+      "modelChosen": "PACK DUO — ALTAJ (2 Portefeuilles Cuir)",
+      "quantity": 2,
+      "totalPrice": 200,
+      "shippingFee": 0,
+      "customerCity": "Casablanca",
+      "customerName": "Ayoub",
+      "customerAddress": "sidi bernoussi hda café Salma",
+      "isConfirmed": true,
+      "confirmedAt": "2026-09-29T08:40:59.028Z",
+      "orderId": "ord-1790671259031",
+      "orderNumber": "ALTAJ-1045",
+      "customerPhone": "88712566276136@lid"
+    }
+  },
+  {
+    "id": "conv-1790515595694",
+    "customerPhone": "212611223344",
+    "customerName": "Amine",
+    "lastMessage": "أكيد، تفضل شوف التصاور ديال البزاطم ديالنا....",
+    "lastMessageAt": "2026-09-27T13:26:48.105Z",
+    "unreadCount": 0,
+    "botActive": true,
+    "funnelState": "OFFER_PITCH",
+    "tags": [
+      "WhatsApp Web QR",
+      "Nouveau Lead"
+    ],
+    "utmSource": "WhatsApp Web QR",
+    "utmCampaign": "CAMPAIGN_WALLET_DARIJA",
+    "messages": [
+      {
+        "id": "msg-1790515595694",
+        "conversationId": "conv-1790515595694",
+        "sender": "CUSTOMER",
+        "text": "Salam bchhal livraison?",
+        "timestamp": "2026-09-27T13:26:35.694Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790515600689",
+        "conversationId": "conv-1790515595694",
+        "sender": "BOT",
+        "text": "السلام عليكم، التوصيل بـ 25 درهم للحبة الواحدة، ومع عرض جوج بزاطم التوصيل بالمجان.",
+        "timestamp": "2026-09-27T13:26:40.688Z",
+        "status": "SENT"
+      },
+      {
+        "id": "msg-1790515605226",
+        "conversationId": "conv-1790515595694",
+        "sender": "CUSTOMER",
+        "text": "bghit nchof tsawer dial bzatim",
+        "timestamp": "2026-09-27T13:26:45.226Z",
+        "status": "READ"
+      },
+      {
+        "id": "msg-1790515608106",
+        "conversationId": "conv-1790515595694",
+        "sender": "BOT",
+        "text": "أكيد، تفضل شوف التصاور ديال البزاطم ديالنا.",
+        "mediaType": "catalog",
+        "mediaItems": [
+          {
+            "title": "ALTAJ CLASSIC — MARRON",
+            "imageUrl": "/images/products/altaj-classic-brown-front.jpg",
+            "price": 119,
+            "description": "مارون كلاسيك أصيل"
+          },
+          {
+            "title": "ALTAJ SIGNATURE — NOIR",
+            "imageUrl": "/images/products/altaj-noir-front.jpg",
+            "price": 119,
+            "description": "أسود ملكي فاخر"
+          }
+        ],
+        "timestamp": "2026-09-27T13:26:48.105Z",
+        "status": "SENT"
+      }
+    ],
+    "capturedOrder": {}
+  }
+]

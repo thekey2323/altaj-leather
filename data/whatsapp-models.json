@@ -1,0 +1,59 @@
+[
+  {
+    "id": "wa-mod-1",
+    "name": "ALTAJ CLASSIC — MARRON",
+    "slug": "altaj-classic-marron",
+    "badge": "BEST-SELLER ⭐",
+    "price": 119,
+    "compareAtPrice": 169,
+    "packDuoPrice": 200,
+    "darijaDescription": "جلد البقر طبيعي 100% ممتاز (Vachette pleine fleur) تاناج نباتي حر في فاس، خياطة يدوية متقونة بالخيط المشمع، كايصبر لسنوات طويلة وفيه بلاصة مخصصة للأوراق النقدية 200 درهم وبطاقات البنك.",
+    "photos": [
+      "/images/products/altaj-classic-brown-front.jpg",
+      "/images/products/altaj-classic-brown-open.jpg",
+      "/images/products/altaj-classic-brown-interior.jpg"
+    ],
+    "videoUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    "videoCaption": "فيديو توضيحي: جودة الجلد الطبيعي وتفاصيل الخياطة اليدوية لبزطام ALTAJ",
+    "isAvailable": true,
+    "autoSendOnGreeting": true,
+    "order": 1
+  },
+  {
+    "id": "wa-mod-2",
+    "name": "ALTAJ SIGNATURE — NOIR",
+    "slug": "altaj-signature-noir",
+    "badge": "ÉLÉGANT & MODERNE",
+    "price": 119,
+    "compareAtPrice": 169,
+    "packDuoPrice": 200,
+    "darijaDescription": "اللون الأسود الملكي مع خياطة حمراء راقية، جلد رطب وصحيح بزاف، كايعطي هيبة وأناقة خاصة. مقاوم للخدوش ومثالي للاستعمال اليومي.",
+    "photos": [
+      "/images/products/altaj-noir-front.jpg",
+      "/images/products/altaj-noir-open.jpg"
+    ],
+    "videoUrl": "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4",
+    "videoCaption": "استعراض البزطام الأسود الفاخر من الداخل والخارج",
+    "isAvailable": true,
+    "autoSendOnGreeting": true,
+    "order": 2
+  },
+  {
+    "id": "wa-mod-3",
+    "name": "PACK DUO PRESTIGE (2 Portefeuilles)",
+    "slug": "pack-duo-altaj",
+    "badge": "🔥 العرض الأكثر طلباً — توصيل مجاني",
+    "price": 200,
+    "compareAtPrice": 338,
+    "packDuoPrice": 200,
+    "darijaDescription": "خيار الأغلبية: كاتاخد 2 ببياسات (1 مارون كلاسيك + 1 كحل أنيق) أو لونين حسب اختيارك بـ 200 درهم فقط عوض 338 درهم، والتوصيل فابور حتى لدارك مع إمكانية المعاينة قبل الدفع!",
+    "photos": [
+      "/images/products/altaj-classic-brown-front.jpg",
+      "/images/products/altaj-noir-front.jpg",
+      "/images/products/altaj-classic-brown-open.jpg"
+    ],
+    "isAvailable": true,
+    "autoSendOnGreeting": true,
+    "order": 3
+  }
+]
