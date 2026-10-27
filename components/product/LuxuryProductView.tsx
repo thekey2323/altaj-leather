@@ -34,7 +34,7 @@ import {
 } from '@/data/altajProducts';
 import { MOROCCAN_CITIES, validateMoroccanPhone } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
-import { getProducts, getReviews } from '@/lib/db/store';
+import { getProducts, getReviews, createOrder } from '@/lib/db/store';
 import { CustomerReview } from '@/types';
 import { WhatsAppAudioPlayer } from '@/components/common/WhatsAppAudioPlayer';
 
@@ -251,8 +251,11 @@ export function LuxuryProductView({ product: initialProduct }: LuxuryProductView
 
       const orderPayload = {
         customerName: fullName.trim(),
+        customerPhone: phone.trim(),
         phone: phone.trim(),
+        customerCity: chosenCity,
         city: chosenCity,
+        customerAddress: address.trim(),
         address: address.trim(),
         notes: notes.trim(),
         bundleId: activeBundle.id,
@@ -266,8 +269,10 @@ export function LuxuryProductView({ product: initialProduct }: LuxuryProductView
         total: activeBundle.price,
         items: [
           {
+            productId: product.id || product.slug,
             productSlug: product.slug,
             productName: `${prodName} (${activeBundle.title})`,
+            productImage: product.featuredImage || productImages[0] || '/images/products/cognac-minimalist.jpg',
             color: product.color,
             quantity: activeBundle.quantity,
             unitPrice: Math.round(activeBundle.price / activeBundle.quantity),
@@ -286,6 +291,11 @@ export function LuxuryProductView({ product: initialProduct }: LuxuryProductView
       const data = await res.json();
 
       if (res.ok && data.success) {
+        // Also save to client-side localStorage store for immediate offline/client access
+        try {
+          createOrder(data.order || orderPayload);
+        } catch {}
+
         confetti({
           particleCount: 80,
           spread: 60,

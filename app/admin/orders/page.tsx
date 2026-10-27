@@ -148,7 +148,7 @@ export default function AdminOrdersPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleCreateNewOrder = (e: React.FormEvent) => {
+  const handleCreateNewOrder = async (e: React.FormEvent) => {
     e.preventDefault();
     const product = products.find((p) => p.id === newProductId) || products[0];
     if (!product) return;
@@ -156,7 +156,7 @@ export default function AdminOrdersPage() {
     const unitPrice = product.price;
     const subtotal = unitPrice * newQuantity;
 
-    const created = createOrder({
+    const orderData = {
       customerName: newCustomerName,
       customerPhone: newCustomerPhone,
       customerCity: newCustomerCity,
@@ -180,7 +180,17 @@ export default function AdminOrdersPage() {
       utmSource: newOrderSource,
       utmCampaign: "Direct_Order",
       status: newOrderStatus,
-    });
+    };
+
+    const created = createOrder(orderData);
+
+    try {
+      await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(created),
+      });
+    } catch {}
 
     setIsNewOrderModalOpen(false);
     // Reset inputs
@@ -192,23 +202,37 @@ export default function AdminOrdersPage() {
     setNewDiscount(0);
     setNewShippingFee(0);
     setNewCourierCost(getEstimatedCourierCostForCity("Casablanca"));
-    loadOrders();
+    await loadOrders();
     showToast(`Nouvelle commande #${created.orderNumber} créée avec succès !`);
   };
 
-  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
+  const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
     updateOrderStatus(orderId, newStatus, "Staff");
-    loadOrders();
+    try {
+      await fetch(`/api/orders/${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+    } catch {}
+    await loadOrders();
     showToast(`Statut de la commande mis à jour : ${newStatus}`);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingOrder) return;
 
     updateOrder(editingOrder);
+    try {
+      await fetch(`/api/orders/${editingOrder.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(editingOrder),
+      });
+    } catch {}
     setEditingOrder(null);
-    loadOrders();
+    await loadOrders();
     showToast(`Commande ${editingOrder.orderNumber} modifiée avec succès !`);
   };
 

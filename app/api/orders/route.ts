@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getOrders, createOrder, deleteOrder, deleteOrders, purgeOrders } from "@/lib/db/store";
+import { getOrders, createOrder, deleteOrder, deleteOrders, purgeOrders, saveServerOrders } from "@/lib/db/store";
 import { getWhatsAppConversations, saveWhatsAppConversations } from "@/lib/whatsapp/store";
 import { Order } from "@/types";
 import { supabase } from "@/lib/supabaseClient";
@@ -84,18 +84,72 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const newOrder = createOrder(body);
+    const rawBody = await req.json();
+
+    const customerName = (rawBody.customerName || rawBody.name || "Client ALTAJ").trim();
+    const customerPhone = (rawBody.customerPhone || rawBody.phone || "").trim();
+    const customerAddress = (rawBody.customerAddress || rawBody.address || "Adresse non spécifiée").trim();
+    const customerCity = (rawBody.customerCity || rawBody.city || "Casablanca").trim();
+
+    let orderToSave: Order;
+
+    if (rawBody.id && rawBody.orderNumber) {
+      orderToSave = {
+        ...rawBody,
+        customerName,
+        customerPhone,
+        customerAddress,
+        customerCity,
+        courierCost: rawBody.courierCost ?? 35,
+        subtotal: Number(rawBody.subtotal ?? rawBody.total ?? rawBody.price ?? 0),
+        total: Number(rawBody.total ?? rawBody.subtotal ?? rawBody.price ?? 0),
+        status: rawBody.status || "NEW",
+        paymentMethod: rawBody.paymentMethod || "COD",
+        createdAt: rawBody.createdAt || new Date().toISOString(),
+      };
+    } else {
+      orderToSave = createOrder({
+        ...rawBody,
+        customerName,
+        customerPhone,
+        customerAddress,
+        customerCity,
+        phone: customerPhone,
+        address: customerAddress,
+        city: customerCity,
+      });
+    }
 
     // Save to Supabase Cloud
     try {
-      await supabase.from("orders").insert(mapToSupabaseOrder(newOrder));
-    } catch (e) {
-      console.warn("Supabase order insert warning:", e);
+      const sbPayload = mapToSupabaseOrder(orderToSave);
+      const { data: sbData, error: sbError } = await supabase
+        .from("orders")
+        .upsert(sbPayload, { onConflict: "id" })
+        .select();
+
+      if (sbError) {
+        console.error("Supabase order upsert error:", sbError);
+      } else {
+        console.log("Supabase order saved successfully:", orderToSave.orderNumber);
+      }
+    } catch (sbEx) {
+      console.error("Supabase exception on order save:", sbEx);
     }
 
-    return NextResponse.json({ success: true, order: newOrder });
+    // Also update server orders cache
+    try {
+      const currentOrders = getOrders();
+      const exists = currentOrders.some((o) => o.id === orderToSave.id);
+      const updatedOrders = exists
+        ? currentOrders.map((o) => (o.id === orderToSave.id ? orderToSave : o))
+        : [orderToSave, ...currentOrders];
+      saveServerOrders(updatedOrders);
+    } catch {}
+
+    return NextResponse.json({ success: true, order: orderToSave });
   } catch (err: any) {
+    console.error("Error in POST /api/orders:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

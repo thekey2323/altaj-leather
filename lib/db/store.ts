@@ -493,26 +493,32 @@ export function getOrderById(id: string): Order | undefined {
   return orders.find((o) => o.id === id || o.orderNumber === id);
 }
 
+export function saveServerOrders(orders: Order[]): void {
+  if (isBrowser()) {
+    setStored(STORAGE_KEYS.ORDERS, orders);
+  }
+  saveServerJson("orders.json", orders);
+  memoryOrders = orders;
+}
+
 export function createOrder(data: {
-  customerName: string;
-  customerPhone: string;
-  customerAddress: string;
-  customerCity: string;
+  customerName?: string;
+  name?: string;
+  customerPhone?: string;
+  phone?: string;
+  customerAddress?: string;
+  address?: string;
+  customerCity?: string;
+  city?: string;
   notes?: string;
-  items: {
-    productId: string;
-    productName: string;
-    productImage: string;
-    quantity: number;
-    unitPrice: number;
-    totalPrice: number;
-    bundleName?: string;
-  }[];
-  subtotal: number;
+  items?: any[];
+  subtotal?: number;
+  price?: number;
   discount?: number;
   shippingFee?: number;
   courierCost?: number;
   utmSource?: string;
+  source?: string;
   utmCampaign?: string;
   status?: OrderStatus;
 }): Order {
@@ -520,32 +526,62 @@ export function createOrder(data: {
   const orderNumSeq = 1025 + orders.length;
   const orderNumber = `ALTAJ-${orderNumSeq}`;
 
+  const cName = (data.customerName || data.name || "Client ALTAJ").trim();
+  const cPhone = (data.customerPhone || data.phone || "").trim();
+  const cAddress = (data.customerAddress || data.address || "Adresse non spécifiée").trim();
+  const cCity = (data.customerCity || data.city || "Casablanca").trim();
+  const subtotal = data.subtotal !== undefined ? Number(data.subtotal) : (data.price !== undefined ? Number(data.price) : 0);
+  const discount = data.discount ? Number(data.discount) : 0;
+  const shippingFee = data.shippingFee ? Number(data.shippingFee) : 0;
+  const total = subtotal - discount + shippingFee;
+
+  const rawItems = Array.isArray(data.items) && data.items.length > 0
+    ? data.items
+    : [
+        {
+          productId: "prod-default",
+          productName: (data as any).bundleTitle || (data as any).itemsSummary || "Produit ALTAJ",
+          productImage: "/images/products/cognac-minimalist.jpg",
+          quantity: 1,
+          unitPrice: subtotal,
+          totalPrice: subtotal,
+          bundleName: (data as any).bundleTitle || undefined
+        }
+      ];
+
   const determinedCourierCost =
     data.courierCost !== undefined && data.courierCost !== null
       ? Number(data.courierCost)
-      : getEstimatedCourierCostForCity(data.customerCity);
+      : getEstimatedCourierCostForCity(cCity);
 
   const newOrder: Order = {
     id: `ord-${Date.now()}`,
     orderNumber,
     createdAt: new Date().toISOString(),
-    customerName: data.customerName,
-    customerPhone: data.customerPhone,
-    customerAddress: data.customerAddress,
-    customerCity: data.customerCity,
+    customerName: cName,
+    customerPhone: cPhone,
+    customerAddress: cAddress,
+    customerCity: cCity,
     courierCost: determinedCourierCost,
     notes: data.notes || "",
-    items: data.items.map((item, idx) => ({
-      ...item,
-      id: `item-${Date.now()}-${idx}`,
+    items: rawItems.map((item: any, idx: number) => ({
+      id: item.id || `item-${Date.now()}-${idx}`,
+      productId: item.productId || item.productSlug || `prod-${idx}`,
+      productName: item.productName || "Portefeuille ALTAJ",
+      productImage: item.productImage || "/images/products/cognac-minimalist.jpg",
+      quantity: Number(item.quantity) || 1,
+      unitPrice: Number(item.unitPrice) || subtotal,
+      totalPrice: Number(item.totalPrice) || subtotal,
+      bundleName: item.bundleName || undefined,
+      color: item.color || undefined
     })),
-    subtotal: data.subtotal,
-    discount: data.discount || 0,
-    shippingFee: data.shippingFee ?? 0,
-    total: data.subtotal - (data.discount || 0) + (data.shippingFee ?? 0),
+    subtotal,
+    discount,
+    shippingFee,
+    total,
     status: data.status || "NEW",
     paymentMethod: "COD",
-    utmSource: data.utmSource || "Direct",
+    utmSource: data.utmSource || data.source || "Direct",
     utmCampaign: data.utmCampaign || "Organic",
     internalNotes: [
       {
@@ -569,13 +605,21 @@ export function createOrder(data: {
       {
         id: `notif-${Date.now()}`,
         title: `Nouvelle commande #${orderNumber}`,
-        customer: data.customerName,
+        customer: cName,
         total: newOrder.total,
         time: new Date().toISOString(),
         read: false,
       },
       ...currentNotifs,
     ]);
+
+    try {
+      fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newOrder),
+      }).catch(() => {});
+    } catch {}
   }
   saveServerJson("orders.json", updatedOrders);
   memoryOrders = updatedOrders;
@@ -584,7 +628,7 @@ export function createOrder(data: {
   updateCustomerFromOrder(newOrder);
 
   // Auto adjust inventory
-  data.items.forEach((item) => {
+  newOrder.items.forEach((item) => {
     adjustStock(
       item.productId,
       -item.quantity,
