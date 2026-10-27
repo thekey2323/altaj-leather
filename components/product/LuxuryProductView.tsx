@@ -26,7 +26,12 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
-import { LuxuryProduct, LUXURY_PRODUCTS, getAllProducts } from '@/data/altajProducts';
+import {
+  LuxuryProduct,
+  LUXURY_PRODUCTS,
+  getAllProducts,
+  adaptStoreProductToLuxury,
+} from '@/data/altajProducts';
 import { MOROCCAN_CITIES, validateMoroccanPhone } from '@/lib/utils';
 import { useLanguage } from '@/context/LanguageContext';
 import { getProducts, getReviews } from '@/lib/db/store';
@@ -37,15 +42,20 @@ interface LuxuryProductViewProps {
   product: LuxuryProduct;
 }
 
-export function LuxuryProductView({ product }: LuxuryProductViewProps) {
+export function LuxuryProductView({ product: initialProduct }: LuxuryProductViewProps) {
   const { lang, isRtl } = useLanguage();
+  const [product, setProduct] = useState<LuxuryProduct>(initialProduct);
+
+  useEffect(() => {
+    setProduct(initialProduct);
+  }, [initialProduct]);
 
   // Dynamic images initialized strictly with this product's own photos
   const getInitialImages = () => {
     const list: string[] = [];
-    if (product.featuredImage) list.push(product.featuredImage);
-    if (Array.isArray(product.galleryImages)) {
-      product.galleryImages.forEach((img) => {
+    if (initialProduct.featuredImage) list.push(initialProduct.featuredImage);
+    if (Array.isArray(initialProduct.galleryImages)) {
+      initialProduct.galleryImages.forEach((img) => {
         if (img && !list.includes(img)) list.push(img);
       });
     }
@@ -56,32 +66,68 @@ export function LuxuryProductView({ product }: LuxuryProductViewProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  // Synchronize client-side with stored product data (admin uploads, deleted photos, custom images)
+  // Synchronize client-side with stored product data and Supabase Cloud
   useEffect(() => {
-    try {
-      const stored = getProducts();
-      const match = stored.find(
-        (p) => p.slug === product.slug || p.id === product.id
-      );
-      if (match) {
-        const storedList: string[] = [];
-        if (match.featuredImage) storedList.push(match.featuredImage);
-        if (Array.isArray(match.images)) {
-          match.images.forEach((img) => {
-            if (img?.url && !storedList.includes(img.url)) {
-              storedList.push(img.url);
+    const syncProductData = async () => {
+      try {
+        // 1. Sync immediately from local storage
+        const stored = getProducts();
+        const match = stored.find(
+          (p) => p.slug === initialProduct.slug || p.id === initialProduct.id
+        );
+        if (match) {
+          const adapted = adaptStoreProductToLuxury(match);
+          setProduct(adapted);
+
+          const storedList: string[] = [];
+          if (match.featuredImage) storedList.push(match.featuredImage);
+          if (Array.isArray(match.images)) {
+            match.images.forEach((img) => {
+              if (img?.url && !storedList.includes(img.url)) {
+                storedList.push(img.url);
+              }
+            });
+          }
+          if (storedList.length > 0) {
+            setProductImages(storedList);
+          }
+        }
+
+        // 2. Sync from Supabase Cloud API
+        const res = await fetch('/api/products');
+        if (res.ok) {
+          const apiProds = await res.json();
+          if (Array.isArray(apiProds) && apiProds.length > 0) {
+            const apiMatch = apiProds.find(
+              (p: any) => p.slug === initialProduct.slug || p.id === initialProduct.id
+            );
+            if (apiMatch) {
+              const adapted = adaptStoreProductToLuxury(apiMatch);
+              setProduct(adapted);
+
+              const apiImages: string[] = [];
+              if (apiMatch.featuredImage) apiImages.push(apiMatch.featuredImage);
+              if (Array.isArray(apiMatch.images)) {
+                apiMatch.images.forEach((img: any) => {
+                  if (img?.url && !apiImages.includes(img.url)) {
+                    apiImages.push(img.url);
+                  }
+                });
+              }
+              if (apiImages.length > 0) {
+                setProductImages(apiImages);
+              }
             }
-          });
+            setActiveStoreProducts(apiProds.map(adaptStoreProductToLuxury));
+          }
         }
-        // ONLY use this product's images - NEVER append pictures from other products
-        if (storedList.length > 0) {
-          setProductImages(storedList);
-        }
+      } catch {
+        // Fallback to initial
       }
-    } catch {
-      // Fallback to initial
-    }
-  }, [product.slug, product.id]);
+    };
+
+    syncProductData();
+  }, [initialProduct.slug, initialProduct.id]);
 
   // Active store products for bundle selections & related items (excluding deleted products)
   const [activeStoreProducts, setActiveStoreProducts] = useState<LuxuryProduct[]>(() => {
@@ -121,7 +167,7 @@ export function LuxuryProductView({ product }: LuxuryProductViewProps) {
   // Bundle offer selection (default to Duo 2 pieces for 189 DH)
   const [selectedBundleId, setSelectedBundleId] = useState('bundle-2');
   const bundles = lang === 'fr' && product.frenchBundleOffers ? product.frenchBundleOffers : product.bundleOffers;
-  const activeBundle = bundles.find((b) => b.id === selectedBundleId) || bundles[1];
+  const activeBundle = bundles.find((b) => b.id === selectedBundleId) || bundles[1] || bundles[0];
 
   // Secondary item choices if 2 or 3 pieces chosen
   const otherProducts = activeStoreProducts.filter((p) => p.slug !== product.slug);

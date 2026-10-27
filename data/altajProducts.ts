@@ -568,76 +568,102 @@ export function adaptStoreProductToLuxury(p: Product): LuxuryProduct {
       'Emballage kraft soigné',
       'Certificat d’authenticité cuir naturel'
     ],
-    bundleOffers: luxuryBase?.bundleOffers || [
-      {
-        id: 'bundle-1',
-        quantity: 1,
-        title: 'عرض قطعة واحدة',
-        subtitle: 'محفظة واحدة بتغليف كرافت أنيق',
-        price: unitPrice,
-        comparePrice: comparePrice,
-        savings: comparePrice - unitPrice,
-        freeShipping: false
-      },
-      {
-        id: 'bundle-2',
-        quantity: 2,
-        title: 'عرض قطعتين (الأكثر طلباً)',
-        subtitle: 'قطعتان من اختيارك — وفر 69 درهم',
-        price: 189,
-        comparePrice: unitPrice * 2,
-        savings: Math.max(49, unitPrice * 2 - 189),
-        badge: '🔥 الأكثر طلباً — توصيل مجاني',
-        isPopular: true,
-        freeShipping: true
-      },
-      {
-        id: 'bundle-3',
-        quantity: 3,
-        title: 'عرض 3 قطع',
-        subtitle: '3 قطع من اختيارك — توصيل مجاني',
-        price: 249,
-        comparePrice: unitPrice * 3,
-        savings: Math.max(90, unitPrice * 3 - 249),
-        badge: 'توصيل مجاني',
-        freeShipping: true
-      }
-    ],
-    frenchBundleOffers: luxuryBase?.frenchBundleOffers || [
-      {
-        id: 'bundle-1',
-        quantity: 1,
-        title: 'Offre 1 Pièce',
-        subtitle: 'Un portefeuille sous emballage kraft soigné',
-        price: unitPrice,
-        comparePrice: comparePrice,
-        savings: comparePrice - unitPrice,
-        freeShipping: false
-      },
-      {
-        id: 'bundle-2',
-        quantity: 2,
-        title: 'Offre 2 Pièces (Meilleure Vente)',
-        subtitle: 'Deux pièces au choix — Économisez 69 DH',
-        price: 189,
-        comparePrice: unitPrice * 2,
-        savings: Math.max(49, unitPrice * 2 - 189),
-        badge: '🔥 Meilleure Vente — Livraison Gratuite',
-        isPopular: true,
-        freeShipping: true
-      },
-      {
-        id: 'bundle-3',
-        quantity: 3,
-        title: 'Offre 3 Pièces',
-        subtitle: 'Trois pièces au choix — Livraison Gratuite',
-        price: 249,
-        comparePrice: unitPrice * 3,
-        savings: Math.max(90, unitPrice * 3 - 249),
-        badge: 'Livraison Gratuite',
-        freeShipping: true
-      }
-    ],
+    bundleOffers: (() => {
+      const customDuo = p.bundleOffers?.find((b) => b.quantity === 2 || b.id === 'bundle-2');
+      const customTrio = p.bundleOffers?.find((b) => b.quantity === 3 || b.id === 'bundle-3');
+      const duoPrice = customDuo?.price && customDuo.price !== 189 && unitPrice !== 119
+        ? customDuo.price
+        : (unitPrice === 119 ? 189 : Math.round((unitPrice * 2) * 0.8));
+      const trioPrice = customTrio?.price && customTrio.price !== 249 && unitPrice !== 119
+        ? customTrio.price
+        : (unitPrice === 119 ? 249 : Math.round((unitPrice * 3) * 0.72));
+      const duoSavings = Math.max(0, (unitPrice * 2) - duoPrice);
+      const trioSavings = Math.max(0, (unitPrice * 3) - trioPrice);
+
+      return [
+        {
+          id: 'bundle-1',
+          quantity: 1,
+          title: 'عرض قطعة واحدة',
+          subtitle: 'محفظة واحدة بتغليف كرافت أنيق',
+          price: unitPrice,
+          comparePrice: comparePrice,
+          savings: Math.max(0, comparePrice - unitPrice),
+          freeShipping: false
+        },
+        {
+          id: 'bundle-2',
+          quantity: 2,
+          title: 'عرض قطعتين (الأكثر طلباً)',
+          subtitle: `قطعتان من اختيارك — وفر ${duoSavings} درهم`,
+          price: duoPrice,
+          comparePrice: unitPrice * 2,
+          savings: duoSavings,
+          badge: '🔥 الأكثر طلباً — توصيل مجاني',
+          isPopular: true,
+          freeShipping: true
+        },
+        {
+          id: 'bundle-3',
+          quantity: 3,
+          title: 'عرض 3 قطع',
+          subtitle: '3 قطع من اختيارك — توصيل مجاني',
+          price: trioPrice,
+          comparePrice: unitPrice * 3,
+          savings: trioSavings,
+          badge: 'توصيل مجاني',
+          freeShipping: true
+        }
+      ];
+    })(),
+    frenchBundleOffers: (() => {
+      const customDuo = p.bundleOffers?.find((b) => b.quantity === 2 || b.id === 'bundle-2');
+      const customTrio = p.bundleOffers?.find((b) => b.quantity === 3 || b.id === 'bundle-3');
+      const duoPrice = customDuo?.price && customDuo.price !== 189 && unitPrice !== 119
+        ? customDuo.price
+        : (unitPrice === 119 ? 189 : Math.round((unitPrice * 2) * 0.8));
+      const trioPrice = customTrio?.price && customTrio.price !== 249 && unitPrice !== 119
+        ? customTrio.price
+        : (unitPrice === 119 ? 249 : Math.round((unitPrice * 3) * 0.72));
+      const duoSavings = Math.max(0, (unitPrice * 2) - duoPrice);
+      const trioSavings = Math.max(0, (unitPrice * 3) - trioPrice);
+
+      return [
+        {
+          id: 'bundle-1',
+          quantity: 1,
+          title: 'Offre 1 Pièce',
+          subtitle: 'Un portefeuille sous emballage kraft soigné',
+          price: unitPrice,
+          comparePrice: comparePrice,
+          savings: Math.max(0, comparePrice - unitPrice),
+          freeShipping: false
+        },
+        {
+          id: 'bundle-2',
+          quantity: 2,
+          title: 'Offre 2 Pièces (Meilleure Vente)',
+          subtitle: `Deux pièces au choix — Économisez ${duoSavings} DH`,
+          price: duoPrice,
+          comparePrice: unitPrice * 2,
+          savings: duoSavings,
+          badge: '🔥 Meilleure Vente — Livraison Gratuite',
+          isPopular: true,
+          freeShipping: true
+        },
+        {
+          id: 'bundle-3',
+          quantity: 3,
+          title: 'Offre 3 Pièces',
+          subtitle: 'Trois pièces au choix — Livraison Gratuite',
+          price: trioPrice,
+          comparePrice: unitPrice * 3,
+          savings: trioSavings,
+          badge: 'Livraison Gratuite',
+          freeShipping: true
+        }
+      ];
+    })(),
     seoTitle: p.seoTitle || luxuryBase?.seoTitle || `${p.name} | جلد طبيعي 100% — Altajleather`,
     seoDescription: p.seoDescription || luxuryBase?.seoDescription || `${p.name} مصنوع يدوياً من الجلد الطبيعي 100%. الدفع عند الاستلام والتوصيل بالمغرب.`
   };

@@ -586,7 +586,7 @@ export default function AdminProductsPage() {
                       <div>
                         <div className="flex items-center gap-1.5">
                           <Link
-                            href={`/product/${p.slug}`}
+                            href={`/products/${p.slug}`}
                             target="_blank"
                             className="font-serif font-bold text-altaj-dark hover:text-altaj-brown flex items-center gap-1"
                           >
