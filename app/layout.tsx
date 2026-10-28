@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import { Suspense } from 'react';
 import { AltajProvider } from '@/context/AltajContext';
 import { LanguageProvider } from '@/context/LanguageContext';
+import { VisitorTracker } from '@/components/analytics/VisitorTracker';
 
 export const metadata: Metadata = {
   title: 'ALTAJ LEATHER | التاج للمصنوعات الجلدية الطبيعية — صناعة يدوية مغربية أصيلة',
@@ -45,6 +47,9 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl" className="scroll-smooth" suppressHydrationWarning>
       <body className="min-h-screen bg-[#FBF9F5] text-[#1E1C1A] antialiased font-sans selection:bg-[#B89563]/20 selection:text-[#5A4031]" suppressHydrationWarning>
+        <Suspense fallback={null}>
+          <VisitorTracker />
+        </Suspense>
         <LanguageProvider>
           <AltajProvider>
             {children}

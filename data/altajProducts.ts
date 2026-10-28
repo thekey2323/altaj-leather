@@ -692,3 +692,100 @@ export function getProductBySlug(slug: string): LuxuryProduct | undefined {
   return LUXURY_PRODUCTS.find((p) => p.slug === slug || p.id === slug);
 }
 
+export async function getProductBySlugAsync(slug: string): Promise<LuxuryProduct | undefined> {
+  const local = getProductBySlug(slug);
+  if (local) return local;
+
+  try {
+    const { supabase } = await import('@/lib/supabaseClient');
+    const { data, error } = await supabase
+      .from('products')
+      .select('*')
+      .or(`slug.eq.${slug},id.eq.${slug}`)
+      .maybeSingle();
+
+    if (data && !error) {
+      const mapped: Product = {
+        id: data.id,
+        slug: data.slug,
+        name: data.name,
+        sku: data.sku || '',
+        tagline: data.tagline || '',
+        description: data.description || '',
+        price: Number(data.price),
+        compareAtPrice: Number(data.compare_at_price ?? 169),
+        cost: Number(data.cost ?? 50),
+        promotionBadge: data.promotion_badge || 'PROMO',
+        featuredImage: data.featured_image || '/images/products/cognac-minimalist.jpg',
+        images: Array.isArray(data.images) ? data.images : [],
+        stock: Number(data.stock ?? 20),
+        lowStockThreshold: Number(data.low_stock_threshold ?? 5),
+        category: data.category || 'Portefeuilles',
+        tags: Array.isArray(data.tags) ? data.tags : ['100% Cuir Naturel'],
+        status: data.status || 'ACTIVE',
+        materials: Array.isArray(data.materials) ? data.materials : [],
+        dimensions: data.dimensions || '10.8 cm x 8.4 cm',
+        handmadeIn: data.handmade_in || 'Atelier ALTAJ — Maroc',
+        bundleOffers: Array.isArray(data.bundle_offers) ? data.bundle_offers : [],
+        relatedProductSlugs: Array.isArray(data.related_product_slugs) ? data.related_product_slugs : [],
+        seoTitle: data.seo_title || '',
+        seoDescription: data.seo_description || '',
+        rating: Number(data.rating ?? 5.0),
+        reviewCount: Number(data.review_count ?? 1),
+        createdAt: data.created_at,
+        updatedAt: data.updated_at,
+      };
+
+      return adaptStoreProductToLuxury(mapped);
+    }
+  } catch (err) {
+    console.error('Error fetching product from Supabase:', err);
+  }
+
+  return undefined;
+}
+
+export async function getAllProductsAsync(): Promise<LuxuryProduct[]> {
+  try {
+    const { supabase } = await import('@/lib/supabaseClient');
+    const { data, error } = await supabase.from('products').select('*');
+    if (data && !error && data.length > 0) {
+      return data.map((row: any) => {
+        const mapped: Product = {
+          id: row.id,
+          slug: row.slug,
+          name: row.name,
+          sku: row.sku || '',
+          tagline: row.tagline || '',
+          description: row.description || '',
+          price: Number(row.price),
+          compareAtPrice: Number(row.compare_at_price ?? 169),
+          cost: Number(row.cost ?? 50),
+          promotionBadge: row.promotion_badge || 'PROMO',
+          featuredImage: row.featured_image || '/images/products/cognac-minimalist.jpg',
+          images: Array.isArray(row.images) ? row.images : [],
+          stock: Number(row.stock ?? 20),
+          lowStockThreshold: Number(row.low_stock_threshold ?? 5),
+          category: row.category || 'Portefeuilles',
+          tags: Array.isArray(row.tags) ? row.tags : ['100% Cuir Naturel'],
+          status: row.status || 'ACTIVE',
+          materials: Array.isArray(row.materials) ? row.materials : [],
+          dimensions: row.dimensions || '10.8 cm x 8.4 cm',
+          handmadeIn: row.handmade_in || 'Atelier ALTAJ — Maroc',
+          bundleOffers: Array.isArray(row.bundle_offers) ? row.bundle_offers : [],
+          relatedProductSlugs: Array.isArray(row.related_product_slugs) ? row.related_product_slugs : [],
+          seoTitle: row.seo_title || '',
+          seoDescription: row.seo_description || '',
+          rating: Number(row.rating ?? 5.0),
+          reviewCount: Number(row.review_count ?? 1),
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        };
+        return adaptStoreProductToLuxury(mapped);
+      });
+    }
+  } catch {}
+
+  return getAllProducts();
+}
+

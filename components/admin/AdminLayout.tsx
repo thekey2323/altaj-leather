@@ -17,6 +17,7 @@ import {
   ChevronRight,
   Lock,
   AlertCircle,
+  BarChart3,
 } from "lucide-react";
 import { useAdminAuth } from "@/context/AdminAuthContext";
 import { getOrders } from "@/lib/db/store";
@@ -168,6 +169,13 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       icon: Package,
       iconColor: "text-sky-600 bg-sky-50 border-sky-100",
       activeColor: "bg-[#8C5E35] text-white shadow-sky-200",
+    },
+    {
+      label: "Analytique & Visiteurs",
+      href: "/admin/analytics",
+      icon: BarChart3,
+      iconColor: "text-purple-600 bg-purple-50 border-purple-100",
+      activeColor: "bg-[#8C5E35] text-white shadow-purple-200",
     },
     {
       label: "Avis & Vocaux",

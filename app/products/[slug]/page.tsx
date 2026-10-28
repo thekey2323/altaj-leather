@@ -1,7 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import { getProductBySlug, getAllProducts } from '@/data/altajProducts';
+import { getProductBySlugAsync, getAllProductsAsync } from '@/data/altajProducts';
 import { LuxuryProductView } from '@/components/product/LuxuryProductView';
 import { BrandHeader } from '@/components/brand/BrandHeader';
 import { BrandFooter } from '@/components/brand/BrandFooter';
@@ -13,7 +13,7 @@ interface Props {
 export const dynamic = 'force-dynamic';
 
 export async function generateStaticParams() {
-  const products = getAllProducts();
+  const products = await getAllProductsAsync();
   return products.map((p) => ({
     slug: p.slug,
   }));
@@ -21,7 +21,7 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlugAsync(slug);
 
   if (!product) {
     return {
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  const product = getProductBySlug(slug);
+  const product = await getProductBySlugAsync(slug);
 
   if (!product) {
     notFound();
