@@ -3,6 +3,7 @@ import { getOrders, createOrder, deleteOrder, deleteOrders, purgeOrders, saveSer
 import { getWhatsAppConversations, saveWhatsAppConversations } from "@/lib/whatsapp/store";
 import { Order } from "@/types";
 import { supabase } from "@/lib/supabaseClient";
+import { notifyNewOrder } from "@/lib/notifications";
 
 function mapFromSupabaseOrder(row: any): Order {
   return {
@@ -145,6 +146,13 @@ export async function POST(req: NextRequest) {
         ? currentOrders.map((o) => (o.id === orderToSave.id ? orderToSave : o))
         : [orderToSave, ...currentOrders];
       saveServerOrders(updatedOrders);
+    } catch {}
+
+    // Send instant push notification to phone (Telegram / Discord)
+    try {
+      notifyNewOrder(orderToSave).catch((err) => {
+        console.error("Order notification error:", err);
+      });
     } catch {}
 
     return NextResponse.json({ success: true, order: orderToSave });
