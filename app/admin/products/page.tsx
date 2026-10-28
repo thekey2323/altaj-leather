@@ -1037,7 +1037,7 @@ export default function AdminProductsPage() {
               {/* Pricing & Stock */}
               <div className="grid grid-cols-3 gap-4">
                 <Input
-                  label="Prix de vente (DH)"
+                  label="Prix 1 Pièce (DH)"
                   type="number"
                   value={editingProduct.price}
                   onChange={(e) =>
@@ -1071,6 +1071,104 @@ export default function AdminProductsPage() {
                   }
                   required
                 />
+              </div>
+
+              {/* BUNDLE OFFERS PRICING (2 PIECES & 3 PIECES) */}
+              <div className="p-3.5 bg-amber-50/60 rounded-xl border border-amber-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-altaj-gold" />
+                    <span className="font-bold text-altaj-dark text-xs uppercase tracking-wider">
+                      Prix des Offres Packs (Landing Page)
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-full border border-emerald-300">
+                    Modifiable librement
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {/* Offer 2 Pieces (Duo) */}
+                  <div className="bg-white p-3 rounded-lg border border-amber-200 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-800 text-xs">Offre 2 Pièces (Duo)</span>
+                      <span className="text-[10px] font-extrabold text-[#8C5E35]">Top Vente</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <label className="block text-[10px] text-slate-500 mb-0.5">Prix Pack Duo (DH) :</label>
+                        <input
+                          type="number"
+                          value={
+                            editingProduct.bundleOffers?.find((b) => b.quantity === 2 || b.id === "bundle-2")?.price ?? 189
+                          }
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            const existing = editingProduct.bundleOffers || [];
+                            const duoIndex = existing.findIndex((b) => b.quantity === 2 || b.id === "bundle-2");
+                            let updated = [...existing];
+                            if (duoIndex >= 0) {
+                              updated[duoIndex] = { ...updated[duoIndex], price: val };
+                            } else {
+                              updated.push({
+                                id: "bundle-2",
+                                name: "2 Portefeuilles (Pack Duo)",
+                                quantity: 2,
+                                price: val,
+                                isPopular: true,
+                              });
+                            }
+                            setEditingProduct({ ...editingProduct, bundleOffers: updated });
+                          }}
+                          className="w-full bg-[#FAF7F2] border border-slate-300 rounded px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-[#8C5E35]"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      S'affiche directement dans le sélecteur d'offre 2 pièces.
+                    </p>
+                  </div>
+
+                  {/* Offer 3 Pieces (Trio) */}
+                  <div className="bg-white p-3 rounded-lg border border-amber-200 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-800 text-xs">Offre 3 Pièces (Trio)</span>
+                      <span className="text-[10px] font-extrabold text-emerald-700">Max Économie</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="flex-1">
+                        <label className="block text-[10px] text-slate-500 mb-0.5">Prix Pack Trio (DH) :</label>
+                        <input
+                          type="number"
+                          value={
+                            editingProduct.bundleOffers?.find((b) => b.quantity === 3 || b.id === "bundle-3")?.price ?? 249
+                          }
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            const existing = editingProduct.bundleOffers || [];
+                            const trioIndex = existing.findIndex((b) => b.quantity === 3 || b.id === "bundle-3");
+                            let updated = [...existing];
+                            if (trioIndex >= 0) {
+                              updated[trioIndex] = { ...updated[trioIndex], price: val };
+                            } else {
+                              updated.push({
+                                id: "bundle-3",
+                                name: "3 Portefeuilles (Pack Trio)",
+                                quantity: 3,
+                                price: val,
+                              });
+                            }
+                            setEditingProduct({ ...editingProduct, bundleOffers: updated });
+                          }}
+                          className="w-full bg-[#FAF7F2] border border-slate-300 rounded px-2.5 py-1.5 text-xs font-bold text-slate-900 focus:outline-none focus:border-[#8C5E35]"
+                        />
+                      </div>
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      S'affiche directement dans le sélecteur d'offre 3 pièces.
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* ============================================================= */}

@@ -612,11 +612,11 @@ export function adaptStoreProductToLuxury(p: Product): LuxuryProduct {
     bundleOffers: (() => {
       const customDuo = p.bundleOffers?.find((b) => b.quantity === 2 || b.id === 'bundle-2');
       const customTrio = p.bundleOffers?.find((b) => b.quantity === 3 || b.id === 'bundle-3');
-      const duoPrice = customDuo?.price && customDuo.price !== 189 && unitPrice !== 119
-        ? customDuo.price
+      const duoPrice = customDuo?.price !== undefined && Number(customDuo.price) > 0
+        ? Number(customDuo.price)
         : (unitPrice === 119 ? 189 : Math.round((unitPrice * 2) * 0.8));
-      const trioPrice = customTrio?.price && customTrio.price !== 249 && unitPrice !== 119
-        ? customTrio.price
+      const trioPrice = customTrio?.price !== undefined && Number(customTrio.price) > 0
+        ? Number(customTrio.price)
         : (unitPrice === 119 ? 249 : Math.round((unitPrice * 3) * 0.72));
       const duoSavings = Math.max(0, (unitPrice * 2) - duoPrice);
       const trioSavings = Math.max(0, (unitPrice * 3) - trioPrice);
@@ -660,11 +660,11 @@ export function adaptStoreProductToLuxury(p: Product): LuxuryProduct {
     frenchBundleOffers: (() => {
       const customDuo = p.bundleOffers?.find((b) => b.quantity === 2 || b.id === 'bundle-2');
       const customTrio = p.bundleOffers?.find((b) => b.quantity === 3 || b.id === 'bundle-3');
-      const duoPrice = customDuo?.price && customDuo.price !== 189 && unitPrice !== 119
-        ? customDuo.price
+      const duoPrice = customDuo?.price !== undefined && Number(customDuo.price) > 0
+        ? Number(customDuo.price)
         : (unitPrice === 119 ? 189 : Math.round((unitPrice * 2) * 0.8));
-      const trioPrice = customTrio?.price && customTrio.price !== 249 && unitPrice !== 119
-        ? customTrio.price
+      const trioPrice = customTrio?.price !== undefined && Number(customTrio.price) > 0
+        ? Number(customTrio.price)
         : (unitPrice === 119 ? 249 : Math.round((unitPrice * 3) * 0.72));
       const duoSavings = Math.max(0, (unitPrice * 2) - duoPrice);
       const trioSavings = Math.max(0, (unitPrice * 3) - trioPrice);
