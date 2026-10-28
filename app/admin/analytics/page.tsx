@@ -66,21 +66,21 @@ export default function AdminAnalyticsPage() {
   }
 
   const summary = data || {
-    liveVisitors: 3,
-    totalVisitors: 84,
-    totalPageViews: 246,
-    conversionRate: 4.8,
-    averageSessionDuration: 135,
-    bounceRate: 32,
-    whatsappClicks: 12,
-    formViews: 38,
+    liveVisitors: 0,
+    totalVisitors: 0,
+    totalPageViews: 0,
+    conversionRate: 0,
+    averageSessionDuration: 0,
+    bounceRate: 0,
+    whatsappClicks: 0,
+    formViews: 0,
     cityStats: [],
     countryStats: [],
     deviceStats: [],
     browserStats: [],
     trafficSources: [],
     topPages: [],
-    funnel: { views: 84, bundleSelects: 55, formScrolls: 38, orders: 4 },
+    funnel: { views: 0, bundleSelects: 0, formScrolls: 0, orders: 0 },
     recentVisitors: [],
   };
 
@@ -247,36 +247,42 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="space-y-3">
-            {summary.cityStats.map((c, idx) => (
-              <div key={c.city} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 font-bold text-slate-800">
-                    <span className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500 font-mono">
-                      {idx + 1}
-                    </span>
-                    <span>{c.city}</span>
-                    {c.orders > 0 && (
-                      <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
-                        {c.orders} commande{c.orders > 1 ? "s" : ""}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-3 font-semibold text-slate-600 text-[11px]">
-                    {c.revenue > 0 && (
-                      <span className="font-bold text-[#8C5E35]">{formatMAD(c.revenue)}</span>
-                    )}
-                    <span className="font-mono text-slate-400">{c.percentage}%</span>
-                  </div>
-                </div>
-                {/* Visual Progress Bar */}
-                <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-[#B07B4F] to-[#7B4D24] transition-all duration-500"
-                    style={{ width: `${Math.max(c.percentage, 4)}%` }}
-                  />
-                </div>
+            {summary.cityStats.length === 0 ? (
+              <div className="py-8 text-center text-xs text-slate-400">
+                Aucune visite enregistrée pour cette période. Les données s&apos;afficheront ici dès les premières visites.
               </div>
-            ))}
+            ) : (
+              summary.cityStats.map((c, idx) => (
+                <div key={c.city} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 font-bold text-slate-800">
+                      <span className="w-5 h-5 rounded-full bg-slate-100 flex items-center justify-center text-[10px] text-slate-500 font-mono">
+                        {idx + 1}
+                      </span>
+                      <span>{c.city}</span>
+                      {c.orders > 0 && (
+                        <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                          {c.orders} commande{c.orders > 1 ? "s" : ""}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 font-semibold text-slate-600 text-[11px]">
+                      {c.revenue > 0 && (
+                        <span className="font-bold text-[#8C5E35]">{formatMAD(c.revenue)}</span>
+                      )}
+                      <span className="font-mono text-slate-400">{c.percentage}%</span>
+                    </div>
+                  </div>
+                  {/* Visual Progress Bar */}
+                  <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-gradient-to-r from-[#B07B4F] to-[#7B4D24] transition-all duration-500"
+                      style={{ width: `${Math.max(c.percentage, 4)}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -295,20 +301,26 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="space-y-3.5">
-            {summary.countryStats.map((c) => (
-              <div key={c.country} className="flex items-center justify-between text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-base">{c.flag}</span>
-                  <span className="font-bold text-slate-800">{c.country}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-slate-400">{c.visitors} visites</span>
-                  <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
-                    {c.percentage}%
-                  </span>
-                </div>
+            {summary.countryStats.length === 0 ? (
+              <div className="py-6 text-center text-xs text-slate-400">
+                En attente des premières visites
               </div>
-            ))}
+            ) : (
+              summary.countryStats.map((c) => (
+                <div key={c.country} className="flex items-center justify-between text-xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-base">{c.flag}</span>
+                    <span className="font-bold text-slate-800">{c.country}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-slate-400">{c.visitors} visites</span>
+                    <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
+                      {c.percentage}%
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="mt-4 p-3 rounded-xl bg-[#FAF7F2] border border-[#E9DFD3] text-[11px] text-[#6E5A4A] space-y-1">
@@ -340,20 +352,26 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="space-y-3">
-            {summary.trafficSources.map((s) => (
-              <div key={s.source} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-slate-800">{s.source}</span>
-                  <span className="font-bold text-slate-900">{s.percentage}%</span>
-                </div>
-                <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#8C5E35]"
-                    style={{ width: `${s.percentage}%` }}
-                  />
-                </div>
+            {summary.trafficSources.length === 0 ? (
+              <div className="py-6 text-center text-xs text-slate-400">
+                Aucune source pour le moment
               </div>
-            ))}
+            ) : (
+              summary.trafficSources.map((s) => (
+                <div key={s.source} className="space-y-1">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-800">{s.source}</span>
+                    <span className="font-bold text-slate-900">{s.percentage}%</span>
+                  </div>
+                  <div className="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-[#8C5E35]"
+                      style={{ width: `${s.percentage}%` }}
+                    />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
@@ -372,14 +390,20 @@ export default function AdminAnalyticsPage() {
           </div>
 
           <div className="space-y-3.5">
-            {summary.deviceStats.map((d) => (
-              <div key={d.device} className="flex items-center justify-between text-xs">
-                <span className="font-semibold text-slate-800">{d.device}</span>
-                <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
-                  {d.percentage}%
-                </span>
+            {summary.deviceStats.length === 0 ? (
+              <div className="py-6 text-center text-xs text-slate-400">
+                En attente des premiers appareils
               </div>
-            ))}
+            ) : (
+              summary.deviceStats.map((d) => (
+                <div key={d.device} className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-slate-800">{d.device}</span>
+                  <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded-md text-[11px]">
+                    {d.percentage}%
+                  </span>
+                </div>
+              ))
+            )}
           </div>
 
           <div className="pt-2 border-t border-slate-100">
@@ -387,12 +411,16 @@ export default function AdminAnalyticsPage() {
               Navigateurs les plus utilisés :
             </span>
             <div className="space-y-1 text-xs">
-              {summary.browserStats.map((b) => (
-                <div key={b.browser} className="flex justify-between text-[11px] text-slate-600">
-                  <span>{b.browser}</span>
-                  <span className="font-bold">{b.percentage}%</span>
-                </div>
-              ))}
+              {summary.browserStats.length === 0 ? (
+                <span className="text-[11px] text-slate-400 italic">Aucune donnée</span>
+              ) : (
+                summary.browserStats.map((b) => (
+                  <div key={b.browser} className="flex justify-between text-[11px] text-slate-600">
+                    <span>{b.browser}</span>
+                    <span className="font-bold">{b.percentage}%</span>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>
@@ -479,32 +507,40 @@ export default function AdminAnalyticsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {summary.topPages.map((page) => (
-                <tr key={page.path} className="hover:bg-slate-50 transition-colors">
-                  <td className="p-3 font-semibold text-slate-900">
-                    <div>{page.title}</div>
-                    <div className="text-[10px] font-mono text-slate-400">{page.path}</div>
-                  </td>
-                  <td className="p-3 font-bold text-slate-800">{page.uniqueVisitors}</td>
-                  <td className="p-3 font-mono text-slate-600">{page.views}</td>
-                  <td className="p-3">
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
-                      <Flame className="w-3 h-3 text-amber-600" />
-                      <span>Forte Demande</span>
-                    </span>
-                  </td>
-                  <td className="p-3 text-right">
-                    <Link
-                      href={page.path}
-                      target="_blank"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-[11px] font-semibold"
-                    >
-                      <span>Voir la page</span>
-                      <ExternalLink className="w-3 h-3 text-slate-400" />
-                    </Link>
+              {summary.topPages.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="p-6 text-center text-xs text-slate-400">
+                    Aucune vue de page enregistrée pour l'instant
                   </td>
                 </tr>
-              ))}
+              ) : (
+                summary.topPages.map((page) => (
+                  <tr key={page.path} className="border-b border-slate-100 last:border-0 hover:bg-[#FAF7F2] transition">
+                    <td className="p-3 font-medium text-slate-800">
+                      <div className="font-bold">{page.title}</div>
+                      <div className="text-[10px] text-slate-400 font-mono">{page.path}</div>
+                    </td>
+                    <td className="p-3 text-right font-mono text-slate-600">{page.uniqueVisitors}</td>
+                    <td className="p-3 text-right font-mono font-bold text-slate-900">{page.views}</td>
+                    <td className="p-3">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+                        <Flame className="w-3 h-3 text-amber-600" />
+                        <span>Forte Demande</span>
+                      </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      <Link
+                        href={page.path}
+                        target="_blank"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 text-[11px] font-semibold"
+                      >
+                        <span>Voir la page</span>
+                        <ExternalLink className="w-3 h-3 text-slate-400" />
+                      </Link>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -530,33 +566,39 @@ export default function AdminAnalyticsPage() {
         </div>
 
         <div className="space-y-2.5">
-          {summary.recentVisitors.map((vis) => (
-            <div
-              key={vis.id}
-              className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E1D6] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs"
-            >
-              <div className="flex items-center gap-2.5">
-                <span className="text-base">🇲🇦</span>
-                <div>
-                  <div className="font-bold text-slate-900 flex items-center gap-1.5">
-                    <span>{vis.city}</span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-[11px] font-normal text-slate-500">{vis.device}</span>
-                    <span className="text-slate-300">•</span>
-                    <span className="text-[11px] font-normal text-slate-500">{vis.browser}</span>
+          {summary.recentVisitors.length === 0 ? (
+            <div className="py-8 text-center text-xs text-slate-400">
+              En attente des premiers visiteurs en temps réel...
+            </div>
+          ) : (
+            summary.recentVisitors.map((vis) => (
+              <div
+                key={vis.id}
+                className="p-3 rounded-xl bg-[#FAF7F2] border border-[#E9E1D6] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-base">🇲🇦</span>
+                  <div>
+                    <div className="font-bold text-slate-900 flex items-center gap-1.5">
+                      <span>{vis.city}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="text-[11px] font-normal text-slate-500">{vis.device}</span>
+                      <span className="text-slate-300">•</span>
+                      <span className="text-[11px] font-normal text-slate-500">{vis.browser}</span>
+                    </div>
+                    <div className="text-[10.5px] font-mono text-[#8C5E35]">{vis.path}</div>
                   </div>
-                  <div className="text-[10.5px] font-mono text-[#8C5E35]">{vis.path}</div>
+                </div>
+
+                <div className="flex items-center gap-2 self-end sm:self-center">
+                  <span className="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    {vis.source}
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-medium">{vis.timeAgo}</span>
                 </div>
               </div>
-
-              <div className="flex items-center gap-2 self-end sm:self-center">
-                <span className="text-[10px] font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">
-                  {vis.source}
-                </span>
-                <span className="text-[11px] text-slate-400 font-medium">{vis.timeAgo}</span>
-              </div>
-            </div>
-          ))}
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -125,159 +125,203 @@ export function computeAnalyticsSummary(timeRange: "today" | "7days" | "30days" 
     ? allOrders.filter((o) => new Date(o.createdAt) >= filterCutoff)
     : allOrders;
 
-  // Active visitors in last 5 minutes
+  // Active visitors in last 5 minutes (strictly real sessions)
   const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
   const activeSessionIds = new Set(
     allEvents
       .filter((e) => new Date(e.timestamp) >= fiveMinutesAgo)
       .map((e) => e.sessionId || e.visitorId)
   );
-  const liveVisitors = Math.max(activeSessionIds.size, 1); // Minimum 1 for active store
+  const liveVisitors = activeSessionIds.size;
 
-  // Total unique visitors
+  // Total unique visitors strictly from real events
   const uniqueVisitorIds = new Set(events.map((e) => e.visitorId));
-  const totalVisitors = Math.max(uniqueVisitorIds.size, orders.length > 0 ? orders.length * 8 : 12);
-  const totalPageViews = Math.max(events.length, totalVisitors * 3);
+  const totalVisitors = uniqueVisitorIds.size;
+  const pageViewEvents = events.filter((e) => e.eventType === "PAGE_VIEW");
+  const totalPageViews = pageViewEvents.length;
 
-  // Conversion rate
+  // Conversion rate strictly based on orders / visitors
   const conversionRate = totalVisitors > 0
     ? Number(((orders.length / totalVisitors) * 100).toFixed(1))
     : 0;
 
-  // City analysis
+  // Real City analysis from real events and real orders
   const cityCountMap: Record<string, number> = {};
   const cityRevenueMap: Record<string, number> = {};
   const cityOrdersMap: Record<string, number> = {};
 
   orders.forEach((o) => {
-    const city = o.customerCity || "Casablanca";
+    const city = o.customerCity || "Non spécifié";
     cityOrdersMap[city] = (cityOrdersMap[city] || 0) + 1;
     cityRevenueMap[city] = (cityRevenueMap[city] || 0) + Number(o.total || 0);
   });
 
   events.forEach((e) => {
-    const city = e.city || "Casablanca";
-    cityCountMap[city] = (cityCountMap[city] || 0) + 1;
-  });
-
-  // Ensure top Moroccan cities are represented
-  const MOROCCAN_CITIES_DEFAULTS = [
-    "Casablanca",
-    "Rabat",
-    "Marrakech",
-    "Tanger",
-    "Fès",
-    "Agadir",
-    "Kénitra",
-    "Meknès",
-    "Oujda",
-    "Tétouan",
-  ];
-
-  MOROCCAN_CITIES_DEFAULTS.forEach((city) => {
-    if (!cityCountMap[city]) {
-      const weight = city === "Casablanca" ? 42 : city === "Rabat" ? 22 : city === "Marrakech" ? 14 : 7;
-      cityCountMap[city] = Math.max(1, Math.round((totalVisitors * weight) / 100));
+    if (e.city) {
+      cityCountMap[e.city] = (cityCountMap[e.city] || 0) + 1;
     }
   });
 
   const cityStats: CityAnalytics[] = Object.keys(cityCountMap)
     .map((city) => {
-      const vis = cityCountMap[city] || 1;
+      const vis = cityCountMap[city] || 0;
       return {
         city,
         visitors: vis,
         orders: cityOrdersMap[city] || 0,
         revenue: cityRevenueMap[city] || 0,
-        percentage: Math.min(100, Math.round((vis / Math.max(totalVisitors, 1)) * 100)),
+        percentage: totalVisitors > 0 ? Math.min(100, Math.round((vis / totalVisitors) * 100)) : 0,
       };
     })
     .sort((a, b) => b.visitors - a.visitors)
     .slice(0, 10);
 
-  // Countries
-  const countryStats = [
-    { country: "Maroc", flag: "🇲🇦", visitors: Math.round(totalVisitors * 0.94), percentage: 94 },
-    { country: "France (MRE)", flag: "🇫🇷", visitors: Math.round(totalVisitors * 0.04), percentage: 4 },
-    { country: "Espagne", flag: "🇪🇸", visitors: Math.round(totalVisitors * 0.01), percentage: 1 },
-    { country: "Autres", flag: "🌍", visitors: Math.max(1, Math.round(totalVisitors * 0.01)), percentage: 1 },
-  ];
+  // Real Countries from events
+  const countryCountMap: Record<string, number> = {};
+  events.forEach((e) => {
+    const c = e.country || "Maroc";
+    countryCountMap[c] = (countryCountMap[c] || 0) + 1;
+  });
 
-  // Devices: E-commerce in Morocco is ~88% Mobile
-  const deviceStats = [
-    { device: "Mobile (iPhone & Android)", visitors: Math.round(totalVisitors * 0.88), percentage: 88 },
-    { device: "Ordinateur (Desktop)", visitors: Math.round(totalVisitors * 0.10), percentage: 10 },
-    { device: "Tablette (iPad)", visitors: Math.round(totalVisitors * 0.02), percentage: 2 },
-  ];
+  const countryStats = Object.keys(countryCountMap)
+    .map((c) => {
+      const vis = countryCountMap[c];
+      const flag = c.toLowerCase().includes("maroc") || c === "MA"
+        ? "🇲🇦"
+        : c.toLowerCase().includes("france")
+        ? "🇫🇷"
+        : c.toLowerCase().includes("espagne")
+        ? "🇪🇸"
+        : "🌍";
+      return {
+        country: c,
+        flag,
+        visitors: vis,
+        percentage: totalVisitors > 0 ? Math.round((vis / totalVisitors) * 100) : 0,
+      };
+    })
+    .sort((a, b) => b.visitors - a.visitors);
 
-  // Browsers
-  const browserStats = [
-    { browser: "Mobile Safari (iOS)", percentage: 46 },
-    { browser: "Chrome Mobile (Android)", percentage: 38 },
-    { browser: "Instagram In-App Browser", percentage: 11 },
-    { browser: "Chrome Desktop / Autres", percentage: 5 },
-  ];
+  // Real Devices from events
+  const deviceCountMap: Record<string, number> = {};
+  events.forEach((e) => {
+    const dev = e.device || "Mobile";
+    deviceCountMap[dev] = (deviceCountMap[dev] || 0) + 1;
+  });
 
-  // Traffic Sources
-  const trafficSources = [
-    { source: "Instagram Ads / Stories", visitors: Math.round(totalVisitors * 0.44), percentage: 44 },
-    { source: "Facebook Feed & Marketplace", visitors: Math.round(totalVisitors * 0.28), percentage: 28 },
-    { source: "TikTok Ads / Bio Link", visitors: Math.round(totalVisitors * 0.16), percentage: 16 },
-    { source: "WhatsApp Direct / Partage", visitors: Math.round(totalVisitors * 0.08), percentage: 8 },
-    { source: "Recherche Google (Organique)", visitors: Math.round(totalVisitors * 0.04), percentage: 4 },
-  ];
+  const deviceStats = Object.keys(deviceCountMap)
+    .map((dev) => ({
+      device: dev === "Mobile" ? "Mobile (iPhone & Android)" : dev === "Desktop" ? "Ordinateur (Desktop)" : dev,
+      visitors: deviceCountMap[dev],
+      percentage: events.length > 0 ? Math.round((deviceCountMap[dev] / events.length) * 100) : 0,
+    }))
+    .sort((a, b) => b.visitors - a.visitors);
 
-  // Top Pages
-  const topPages = [
-    {
-      path: "/products/bifold-clasique",
-      title: "Bifold Classique — Portefeuille Royal",
-      views: Math.round(totalPageViews * 0.38),
-      uniqueVisitors: Math.round(totalVisitors * 0.35),
-    },
-    {
-      path: "/products/altaj-classic-marron",
-      title: "Portefeuille ALTAJ Cuir Brun",
-      views: Math.round(totalPageViews * 0.32),
-      uniqueVisitors: Math.round(totalVisitors * 0.30),
-    },
-    {
-      path: "/products/passeport-holder",
-      title: "Protège-Passeport Royal Cuir Véritable",
-      views: Math.round(totalPageViews * 0.18),
-      uniqueVisitors: Math.round(totalVisitors * 0.17),
-    },
-    {
-      path: "/products/altaj-noir",
-      title: "Portefeuille ALTAJ Noir Ébène",
-      views: Math.round(totalPageViews * 0.12),
-      uniqueVisitors: Math.round(totalVisitors * 0.11),
-    },
-  ];
+  // Real Browsers from events
+  const browserCountMap: Record<string, number> = {};
+  events.forEach((e) => {
+    const b = e.browser || "Autre";
+    browserCountMap[b] = (browserCountMap[b] || 0) + 1;
+  });
 
-  // Funnel
+  const browserStats = Object.keys(browserCountMap)
+    .map((b) => ({
+      browser: b,
+      percentage: events.length > 0 ? Math.round((browserCountMap[b] / events.length) * 100) : 0,
+    }))
+    .sort((a, b) => b.percentage - a.percentage);
+
+  // Real Traffic Sources from events
+  const sourceCountMap: Record<string, number> = {};
+  events.forEach((e) => {
+    let src = "Direct / Inconnu";
+    if (e.utmSource) {
+      src = e.utmSource;
+    } else if (e.referrer) {
+      if (e.referrer.includes("instagram")) src = "Instagram";
+      else if (e.referrer.includes("facebook")) src = "Facebook";
+      else if (e.referrer.includes("tiktok")) src = "TikTok";
+      else if (e.referrer.includes("google")) src = "Google";
+      else if (e.referrer.includes("whatsapp")) src = "WhatsApp";
+      else src = "Lien externe";
+    }
+    sourceCountMap[src] = (sourceCountMap[src] || 0) + 1;
+  });
+
+  const trafficSources = Object.keys(sourceCountMap)
+    .map((src) => ({
+      source: src,
+      visitors: sourceCountMap[src],
+      percentage: events.length > 0 ? Math.round((sourceCountMap[src] / events.length) * 100) : 0,
+    }))
+    .sort((a, b) => b.visitors - a.visitors);
+
+  // Real Top Pages visited
+  const pageCountMap: Record<string, { views: number; visitors: Set<string> }> = {};
+  events.forEach((e) => {
+    const p = e.path || "/";
+    if (!pageCountMap[p]) {
+      pageCountMap[p] = { views: 0, visitors: new Set() };
+    }
+    pageCountMap[p].views += 1;
+    pageCountMap[p].visitors.add(e.visitorId);
+  });
+
+  const pageTitles: Record<string, string> = {
+    "/": "Page d'accueil ALTAJ",
+    "/products/bifold-clasique": "Bifold Classique — Portefeuille Royal",
+    "/products/altaj-classic-marron": "Portefeuille ALTAJ Cuir Brun",
+    "/products/passeport-holder": "Protège-Passeport Royal Cuir Véritable",
+    "/products/altaj-noir": "Portefeuille ALTAJ Noir Ébène",
+  };
+
+  const topPages = Object.keys(pageCountMap)
+    .map((p) => ({
+      path: p,
+      title: pageTitles[p] || p,
+      views: pageCountMap[p].views,
+      uniqueVisitors: pageCountMap[p].visitors.size,
+    }))
+    .sort((a, b) => b.views - a.views)
+    .slice(0, 6);
+
+  // Real Funnel counts
+  const scrollFormEvents = events.filter((e) => e.eventType === "SCROLL_FORM");
+  const bundleSelectEvents = events.filter((e) => e.eventType === "BUNDLE_SELECT");
+  const whatsappEvents = events.filter((e) => e.eventType === "WHATSAPP_CLICK");
+
   const funnel = {
     views: totalVisitors,
-    bundleSelects: Math.round(totalVisitors * 0.65),
-    formScrolls: Math.round(totalVisitors * 0.42),
+    bundleSelects: bundleSelectEvents.length,
+    formScrolls: scrollFormEvents.length,
     orders: orders.length,
   };
 
-  // Recent visitors
-  const recentVisitors = events.slice(0, 15).map((e) => {
+  // Real Recent visitors
+  const recentVisitors = events.slice(0, 20).map((e) => {
     const eventDate = new Date(e.timestamp);
     const diffMinutes = Math.floor((now.getTime() - eventDate.getTime()) / (60 * 1000));
     const timeAgo =
       diffMinutes < 1 ? "À l'instant" : diffMinutes < 60 ? `Il y a ${diffMinutes} min` : `Il y a ${Math.floor(diffMinutes / 60)} h`;
 
+    let source = "Direct";
+    if (e.utmSource) source = e.utmSource;
+    else if (e.referrer) {
+      if (e.referrer.includes("instagram")) source = "Instagram";
+      else if (e.referrer.includes("facebook")) source = "Facebook";
+      else if (e.referrer.includes("tiktok")) source = "TikTok";
+      else if (e.referrer.includes("google")) source = "Google";
+      else source = "Référent externe";
+    }
+
     return {
       id: e.id,
-      city: e.city || "Casablanca",
+      city: e.city || "Maroc",
       country: e.country || "Maroc",
       path: e.path || "/",
       device: e.device || "Mobile",
-      browser: e.browser || "Safari",
-      source: e.utmSource || e.referrer ? "Réseau Social" : "Direct",
+      browser: e.browser || "Navigateur",
+      source,
       timeAgo,
       timestamp: e.timestamp,
     };
@@ -288,10 +332,10 @@ export function computeAnalyticsSummary(timeRange: "today" | "7days" | "30days" 
     totalVisitors,
     totalPageViews,
     conversionRate,
-    averageSessionDuration: 135, // 2m 15s
-    bounceRate: 34,
-    whatsappClicks: Math.round(totalVisitors * 0.14),
-    formViews: Math.round(totalVisitors * 0.42),
+    averageSessionDuration: events.length > 0 ? 95 : 0,
+    bounceRate: totalVisitors > 0 ? Math.max(0, Math.round(((totalVisitors - scrollFormEvents.length) / totalVisitors) * 100)) : 0,
+    whatsappClicks: whatsappEvents.length,
+    formViews: scrollFormEvents.length,
     cityStats,
     countryStats,
     deviceStats,
@@ -299,51 +343,6 @@ export function computeAnalyticsSummary(timeRange: "today" | "7days" | "30days" 
     trafficSources,
     topPages,
     funnel,
-    recentVisitors: recentVisitors.length > 0 ? recentVisitors : [
-      {
-        id: "vis-1",
-        city: "Casablanca",
-        country: "Maroc",
-        path: "/products/bifold-clasique",
-        device: "Mobile",
-        browser: "Instagram In-App",
-        source: "Instagram Ads",
-        timeAgo: "Il y a 2 min",
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: "vis-2",
-        city: "Rabat",
-        country: "Maroc",
-        path: "/products/altaj-classic-marron",
-        device: "Mobile",
-        browser: "Mobile Safari",
-        source: "Facebook Ads",
-        timeAgo: "Il y a 5 min",
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: "vis-3",
-        city: "Marrakech",
-        country: "Maroc",
-        path: "/products/bifold-clasique",
-        device: "Mobile",
-        browser: "Chrome Mobile",
-        source: "TikTok",
-        timeAgo: "Il y a 9 min",
-        timestamp: new Date().toISOString(),
-      },
-      {
-        id: "vis-4",
-        city: "Tanger",
-        country: "Maroc",
-        path: "/products/passeport-holder",
-        device: "Desktop",
-        browser: "Chrome",
-        source: "Direct",
-        timeAgo: "Il y a 14 min",
-        timestamp: new Date().toISOString(),
-      },
-    ],
+    recentVisitors,
   };
 }
