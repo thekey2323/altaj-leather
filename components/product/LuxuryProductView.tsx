@@ -553,6 +553,56 @@ export function LuxuryProductView({ product: initialProduct }: LuxuryProductView
               </div>
             </div>
 
+            {/* COLOR VARIANT SELECTOR (E.G. MARRON CUIR NATUREL / NOIR ROYAL) */}
+            {product.colorVariants && product.colorVariants.length > 0 && (
+              <div className="bg-white p-3 rounded-2xl border border-[#EAE1D5] shadow-2xs space-y-2">
+                <div className={`flex items-center justify-between text-xs font-bold text-[#1E1916] ${isRtl ? 'text-right' : 'text-left'}`}>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full" style={{ backgroundColor: product.colorHex }} />
+                    <span>{lang === 'ar' ? 'اللون المختار:' : 'Couleur sélectionnée :'}</span>
+                    <span className="text-[#8C5E35] font-extrabold">
+                      {lang === 'ar' ? product.color : product.frenchColor}
+                    </span>
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-normal">
+                    {lang === 'ar' ? 'انقر لتغيير اللون' : 'Cliquez pour changer'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {product.colorVariants.map((v) => {
+                    const isCurrent = v.slug === product.slug;
+                    return (
+                      <Link
+                        key={v.slug}
+                        href={`/products/${v.slug}`}
+                        className={`flex items-center gap-2.5 p-2 rounded-xl border-2 transition-all ${
+                          isCurrent
+                            ? 'border-[#8C5E35] bg-[#F7F2EB] shadow-xs'
+                            : 'border-[#EAE1D5] hover:border-slate-300 bg-white'
+                        }`}
+                      >
+                        <span
+                          className="w-5 h-5 rounded-full border border-black/10 shrink-0 shadow-inner"
+                          style={{ backgroundColor: v.colorHex }}
+                        />
+                        <div className="min-w-0 flex-1">
+                          <div className="text-xs font-bold text-slate-900 truncate">
+                            {lang === 'ar' ? v.name : v.frenchName}
+                          </div>
+                          <div className="text-[10px] text-slate-400">
+                            {isCurrent
+                              ? (lang === 'ar' ? '✓ نشط حالياً' : '✓ Actif')
+                              : (lang === 'ar' ? 'عرض هذا اللون' : 'Voir cette couleur')}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* BUNDLE OFFER SELECTOR */}
             <div className="space-y-2">
               <div className="flex items-center justify-between text-xs font-bold text-[#1E1916]">

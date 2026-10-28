@@ -14,6 +14,14 @@ export interface ProductBundleOffer {
   freeShipping: boolean;
 }
 
+export interface ProductColorVariant {
+  name: string;
+  frenchName: string;
+  colorHex: string;
+  slug: string;
+  image: string;
+}
+
 export interface LuxuryProduct {
   id: string;
   slug: string;
@@ -32,6 +40,7 @@ export interface LuxuryProduct {
   color: string;
   frenchColor: string;
   colorHex: string;
+  colorVariants?: ProductColorVariant[];
   badge: string;
   frenchBadge: string;
   stock: number;
@@ -219,6 +228,22 @@ export const LUXURY_PRODUCTS: LuxuryProduct[] = [
     "color": "بني مارون أصيل",
     "frenchColor": "Marron Cuir Naturel",
     "colorHex": "#5C381E",
+    "colorVariants": [
+      {
+        "name": "بني مارون أصيل",
+        "frenchName": "Marron Cuir Naturel",
+        "colorHex": "#5C381E",
+        "slug": "altaj-classic-marron",
+        "image": "/images/products/altaj-classic-marron-custom-1.jpg"
+      },
+      {
+        "name": "أسود ملكي فاخر",
+        "frenchName": "Noir Royal",
+        "colorHex": "#1A1A1A",
+        "slug": "altaj-noir",
+        "image": "/images/products/altaj-noir-front.jpg"
+      }
+    ],
     "badge": "👑 الأكثر طلباً",
     "frenchBadge": "👑 Plus Demandé",
     "stock": 25,
@@ -357,6 +382,22 @@ export const LUXURY_PRODUCTS: LuxuryProduct[] = [
     "color": "أسود ملكي فاخر",
     "frenchColor": "Noir Royal",
     "colorHex": "#1A1A1A",
+    "colorVariants": [
+      {
+        "name": "أسود ملكي فاخر",
+        "frenchName": "Noir Royal",
+        "colorHex": "#1A1A1A",
+        "slug": "altaj-noir",
+        "image": "/images/products/altaj-noir-front.jpg"
+      },
+      {
+        "name": "بني مارون أصيل",
+        "frenchName": "Marron Cuir Naturel",
+        "colorHex": "#5C381E",
+        "slug": "altaj-classic-marron",
+        "image": "/images/products/altaj-classic-marron-custom-1.jpg"
+      }
+    ],
     "badge": "✨ أناقة كلاسيكية",
     "frenchBadge": "✨ Élégance Noire",
     "stock": 18,
