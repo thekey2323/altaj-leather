@@ -18,8 +18,8 @@ function formatPhoneForWhatsApp(phone: string): string {
  * Send instant Telegram notification to the store owner
  */
 export async function sendTelegramOrderNotification(order: Order): Promise<boolean> {
-  const botToken = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.TELEGRAM_CHAT_ID;
+  const botToken = process.env.TELEGRAM_BOT_TOKEN || "9099527574:AAERvf_UvrvR4mHq-t9aQND9BM0rkZMrIjQ";
+  const chatId = process.env.TELEGRAM_CHAT_ID || "531714904";
 
   if (!botToken || !chatId) {
     return false;
